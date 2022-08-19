@@ -1,0 +1,16 @@
+{
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview"
+  },
+  "devDependencies": {
+    "nuxt": "3.0.0-rc.8"
+  },
+  "dependencies": {
+    "@types/three": "^0.143.1",
+    "three": "^0.143.0"
+  }
+}
