@@ -1,3 +1,5 @@
+import { WebGLRenderer, Camera } from "three";
+
 class Dataflow<
   PROPS extends { [key: string]: any },
   PROVIDES extends { [key: string]: any },
@@ -55,6 +57,6 @@ export const newDataflow = <
   PROPS extends { [key: string]: any },
   PROVIDES extends { [key: string]: any }
 >(
-  props?: PROPS,
-  provides?: PROVIDES
+  props: PROPS,
+  provides: PROVIDES
 ) => new Dataflow(props, provides);
