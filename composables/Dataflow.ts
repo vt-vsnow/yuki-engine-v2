@@ -36,9 +36,8 @@ class Dataflow<
     >(
       childProps,
       childProvides,
-      <PROP_NAME extends keyof PROPS>(e: PROP_NAME, val) => {
-        this.props[e] = val;
-      },
+      <PROP_NAME extends keyof PROPS>(e: PROP_NAME, val) =>
+        (this.props[e] = val),
       ((e) => this.provides[e] || this.inject(e)) as ((
         e: keyof INJECTS
       ) => (INJECTS & PROVIDES)[keyof INJECTS] &
