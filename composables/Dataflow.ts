@@ -1,5 +1,3 @@
-import { WebGLRenderer, Camera } from "three";
-
 class Dataflow<
   PROPS extends { [key: string]: any },
   PROVIDES extends { [key: string]: any },
