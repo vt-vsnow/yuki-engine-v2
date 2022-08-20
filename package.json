@@ -1,0 +1,18 @@
+{
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview"
+  },
+  "devDependencies": {
+    "@prettier/plugin-pug": "^2.2.0",
+    "@types/three": "^0.143.1",
+    "nuxt": "3.0.0-rc.8",
+    "prettier": "^2.7.1",
+    "pug": "^3.0.2",
+    "sass": "^1.54.5",
+    "three": "^0.143.0"
+  }
+}
