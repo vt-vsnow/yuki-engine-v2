@@ -21,8 +21,8 @@ export class Dataflow<
     emit?: EmitFunc<EMITS>,
     inject?: InjectFunc<INJECTS>
   ) {
-    this.props = props;
-    this.provides = provides;
+    this.props = reactive(props) as PROPS;
+    this.provides = reactive(provides) as PROVIDES;
     this.emit = emit;
     this.inject = inject;
     handle && handle(this);
