@@ -6,14 +6,16 @@ const renderDataflowProps = {
   suspending: 0,
   count: 0,
   renderRequired: false,
-  updateLoadings: null as null | [string, number],
-  updateSuspendings: null as null | [string, number],
-  updateCounts: null as null | [string, number],
-  updateRenderRequired: null as null | [string, boolean],
   loadings: {} as { [key: string]: number },
   suspendings: {} as { [key: string]: number },
   counts: {} as { [key: string]: number },
   renderRequireds: {} as { [key: string]: boolean },
+  updateLoadings: null as null | [string, number],
+  updateSuspendings: null as null | [string, number],
+  updateCounts: null as null | [string, number],
+  updateRenderRequired: null as null | [string, boolean],
+  addCallback: null as null | [string, number],
+  removeCallback: null as null | string,
 };
 const newRenderDataflowProvides = () => ({
   renderer: useWebGLRenderer(),
@@ -85,6 +87,35 @@ const handle = <PROPS, PROVIDES>(
         self.props.counts[self.props.updateCounts[0]] =
           self.props.updateCounts[1];
         self.props.updateCounts = null;
+      }
+    },
+    { flush: "sync" }
+  );
+
+  // addCallback
+  watchEffect(
+    () => {
+      if (self.props.addCallback) {
+        const key = self.props.addCallback[0];
+        self.props.loadings[key] = 0;
+        self.props.suspendings[key] = 0;
+        self.props.counts[key] = self.props.addCallback[1];
+        self.props.renderRequireds[key] = false;
+        self.props.addCallback = null;
+      }
+    },
+    { flush: "sync" }
+  );
+  // removeCallback
+  watchEffect(
+    () => {
+      if (self.props.removeCallback) {
+        const key = self.props.removeCallback;
+        delete self.props.loadings[key];
+        delete self.props.suspendings[key];
+        delete self.props.counts[key];
+        delete self.props.renderRequireds[key];
+        self.props.removeCallback = null;
       }
     },
     { flush: "sync" }
