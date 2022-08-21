@@ -173,9 +173,9 @@ const handle = <PROPS, PROVIDES>(
   );
   watchEffect(
     () => {
-      self.props.renderRequired = !Object.values(
+      self.props.renderRequired = Object.values(
         self.props.renderRequireds
-      ).every((val) => !val);
+      ).some((val) => val);
     },
     { flush: "sync" }
   );

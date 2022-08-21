@@ -9,6 +9,15 @@ Teleport(:to="flow.provides.element")
 <script setup lang="ts">
 const flow = useRenderDataflow({}, {});
 provide("flow", flow);
+let running = true;
+onUnmounted(() => {
+  running = false;
+});
+const render = () => {
+  running && requestAnimationFrame(render);
+  flow.props.renderRequired = true;
+};
+render();
 </script>
 
 <style scoped lang="scss">
