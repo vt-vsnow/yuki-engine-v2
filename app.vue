@@ -7,4 +7,7 @@ div
 * {
   margin: 0;
 }
+body > canvas {
+  position: absolute;
+}
 </style>
