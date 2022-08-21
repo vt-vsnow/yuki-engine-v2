@@ -3,7 +3,7 @@ div {{ flow }}
 </template>
 <script setup lang="ts">
 const flow = useRenderDataflow({}, {});
-const child = flow.addChild({}, {});
+const child = flow.newChild({}, {});
 
 child.emit("updateCounts", ["xxx", 25]);
 child.emit("updateCounts", ["yyy", 12]);

@@ -63,7 +63,7 @@ export class Dataflow<
   /**
    * 新しい子フローを作成して返します。
    */
-  addChild<CHILD_PROPS, CHILD_PROVIDES>(
+  newChild<CHILD_PROPS, CHILD_PROVIDES>(
     props: CHILD_PROPS,
     provides: CHILD_PROVIDES,
     handle?: DataflowHandle<

@@ -2,12 +2,12 @@ import { expect, describe, it, beforeEach } from "vitest";
 import { Dataflow } from "./Dataflow";
 describe("dataflow", () => {
   let flow = new Dataflow({ 1: 2, 3: 4 }, { 5: 6, 7: 8 });
-  let child = flow.addChild({ 9: 10, 11: 12 }, { 13: 14, 15: 16 });
-  let childChild = child.addChild({}, {});
+  let child = flow.newChild({ 9: 10, 11: 12 }, { 13: 14, 15: 16 });
+  let childChild = child.newChild({}, {});
   beforeEach(() => {
     flow = new Dataflow({ 1: 2, 3: 4 }, { 5: 6, 7: 8 });
-    child = flow.addChild({ 9: 10, 11: 12 }, { 13: 14, 15: 16 });
-    childChild = child.addChild({}, {});
+    child = flow.newChild({ 9: 10, 11: 12 }, { 13: 14, 15: 16 });
+    childChild = child.newChild({}, {});
   });
 
   it("flow.props.3 is 4", () => {
