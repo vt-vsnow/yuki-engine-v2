@@ -1,6 +1,5 @@
 import { Dataflow } from "./Dataflow";
-import { watchEffect, watch, toRef } from "vue";
-import { Camera } from "three";
+import type { Camera } from "three";
 const renderDataflowProps = {
   loading: 0,
   suspending: 0,

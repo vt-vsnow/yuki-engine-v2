@@ -1,4 +1,3 @@
-import { reactive } from "vue";
 type EmitFunc<EMITS> = { <T extends keyof EMITS>(e: T, val: EMITS[T]): void };
 type InjectFunc<INJECTS> = { <T extends keyof INJECTS>(e: T): INJECTS[T] };
 type DataflowHandle<PROPS, PROVIDES, EMITS, INJECTS> = (

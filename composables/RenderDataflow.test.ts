@@ -64,4 +64,8 @@ describe("render-dataflow", () => {
       expect(flow.props.suspending).toBe(39);
     });
   });
+  it("provide", () => {
+    expect(flow.provides.camera).toBeDefined();
+    expect(child.inject("camera")).toBeDefined();
+  });
 });
