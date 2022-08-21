@@ -7,10 +7,11 @@ const props = defineProps<{ scene?: Scene }>();
 const flow = inject<RenderDataflow<{}, {}, {}, {}>>("flow");
 const childFlow = flow.newChild({}, {});
 const id = useRandomId();
-childFlow.emit("updateCounts", [id, 1]);
-childFlow.emit("updateLoadings", [id, 0]);
-childFlow.emit("updateSuspendings", [id, 0]);
-childFlow.emit("updateRenderRequired", [id, false]);
+childFlow.emit("addCallback", [id, 1]);
+onUnmounted(() => {
+  childFlow.emit("removeCallback", id);
+});
+
 watchEffect(() => {
   if (flow.props.loadings[id] === -1) {
     childFlow.emit("updateLoadings", [id, 0]);
