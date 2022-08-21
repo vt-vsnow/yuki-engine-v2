@@ -3,10 +3,10 @@ import { useRenderDataflow } from "./RenderDataflow";
 
 describe("render-dataflow", () => {
   let flow = useRenderDataflow({}, {});
-  let child = flow.addChild({}, {});
+  let child = flow.newChild({}, {});
   beforeEach(() => {
     flow = useRenderDataflow({}, {});
-    child = flow.addChild({}, {});
+    child = flow.newChild({}, {});
   });
   it("xxx:10,yyy:12 => loading is 22", async () => {
     child.emit("updateLoadings", ["xxx", 10]);

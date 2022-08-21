@@ -157,7 +157,7 @@ export const useRenderDataflow = <PROPS, PROVIDES>(
   >
 ) => {
   if (parent) {
-    return parent.addChild(
+    return parent.newChild(
       { ...renderDataflowProps, ...props },
       { ...newRenderDataflowProvides(), ...provides },
       handle
