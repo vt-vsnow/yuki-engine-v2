@@ -11,9 +11,9 @@ const renderDataflowProps = {
   suspendings: {} as { [key: string]: number },
   counts: {} as { [key: string]: number },
 };
-const renderDataflowProvides = {};
+const newRenderDataflowProvides = () => ({});
 type RenderDataflowProps = typeof renderDataflowProps;
-type RenderDataflowProvides = typeof renderDataflowProvides;
+type RenderDataflowProvides = ReturnType<typeof newRenderDataflowProvides>;
 type ToplevelRenderDataflow<PROPS, PROVIDES> = Dataflow<
   RenderDataflowProps & PROPS,
   RenderDataflowProvides & PROVIDES,
@@ -155,13 +155,13 @@ export const useRenderDataflow = <PROPS, PROVIDES>(
   if (parent) {
     return parent.addChild(
       { ...renderDataflowProps, ...props },
-      { ...renderDataflowProvides, ...provides },
+      { ...newRenderDataflowProvides(), ...provides },
       handle
     );
   } else {
     return new Dataflow(
       { ...renderDataflowProps, ...props },
-      { ...renderDataflowProvides, ...provides },
+      { ...newRenderDataflowProvides(), ...provides },
       handle
     );
   }
