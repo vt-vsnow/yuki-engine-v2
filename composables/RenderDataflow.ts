@@ -83,42 +83,63 @@ const handle = <PROPS, PROVIDES>(
   );
 
   // -1
-  watch(toRef(self.props, "loading"), () => {
-    if (self.props.loading === -1) {
-      for (const key in self.props.loadings) {
-        self.props.loadings[key] = -1;
+  watch(
+    toRef(self.props, "loading"),
+    () => {
+      if (self.props.loading === -1) {
+        for (const key in self.props.loadings) {
+          self.props.loadings[key] = -1;
+        }
       }
-    }
-  });
-  watch(toRef(self.props, "suspending"), () => {
-    if (self.props.suspending === -1) {
-      for (const key in self.props.suspendings) {
-        self.props.suspendings[key] = -1;
+    },
+    { flush: "sync" }
+  );
+  watch(
+    toRef(self.props, "suspending"),
+    () => {
+      if (self.props.suspending === -1) {
+        for (const key in self.props.suspendings) {
+          self.props.suspendings[key] = -1;
+        }
       }
-    }
-  });
-  watch(toRef(self.props, "count"), () => {
-    if (self.props.count === -1) {
-      for (const key in self.props.counts) {
-        self.props.counts[key] = -1;
+    },
+    { flush: "sync" }
+  );
+  watch(
+    toRef(self.props, "count"),
+    () => {
+      if (self.props.count === -1) {
+        for (const key in self.props.counts) {
+          self.props.counts[key] = -1;
+        }
       }
-    }
-  });
+    },
+    { flush: "sync" }
+  );
 
   // 集計
-  watchEffect(() => {
-    self.props.loading = objectReduce(self.props.loadings, (val, key) =>
-      val === -1 ? self.props.counts[key] : val
-    );
-  });
-  watchEffect(() => {
-    self.props.suspending = objectReduce(self.props.suspendings, (val, key) =>
-      val === -1 ? self.props.counts[key] : val
-    );
-  });
-  watchEffect(() => {
-    self.props.count = objectReduce(self.props.counts, (val) => val);
-  });
+  watchEffect(
+    () => {
+      self.props.loading = objectReduce(self.props.loadings, (val, key) =>
+        val === -1 ? self.props.counts[key] : val
+      );
+    },
+    { flush: "sync" }
+  );
+  watchEffect(
+    () => {
+      self.props.suspending = objectReduce(self.props.suspendings, (val, key) =>
+        val === -1 ? self.props.counts[key] : val
+      );
+    },
+    { flush: "sync" }
+  );
+  watchEffect(
+    () => {
+      self.props.count = objectReduce(self.props.counts, (val) => val);
+    },
+    { flush: "sync" }
+  );
 };
 
 export const useRenderDataflow = <PROPS, PROVIDES>(
