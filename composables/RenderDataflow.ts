@@ -19,13 +19,13 @@ const newRenderDataflowProvides = () => ({
 });
 type RenderDataflowProps = typeof renderDataflowProps;
 type RenderDataflowProvides = ReturnType<typeof newRenderDataflowProvides>;
-type ToplevelRenderDataflow<PROPS, PROVIDES> = Dataflow<
+export type ToplevelRenderDataflow<PROPS, PROVIDES> = Dataflow<
   RenderDataflowProps & PROPS,
   RenderDataflowProvides & PROVIDES,
   {},
   {}
 >;
-type RenderDataflow<PROPS, PROVIDES, EMITS, INJECTS> = Dataflow<
+export type RenderDataflow<PROPS, PROVIDES, EMITS, INJECTS> = Dataflow<
   RenderDataflowProps & PROPS,
   RenderDataflowProvides & PROVIDES,
   EMITS,
