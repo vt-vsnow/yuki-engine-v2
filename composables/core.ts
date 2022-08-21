@@ -80,3 +80,5 @@ window.addEventListener("load", () => {
   onResize();
 });
 window.addEventListener("resize", onResize);
+
+export const useRandomId = () => Math.random().toString(36).substring(2);

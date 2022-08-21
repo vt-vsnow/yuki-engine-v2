@@ -5,12 +5,15 @@ const renderDataflowProps = {
   loading: 0,
   suspending: 0,
   count: 0,
+  renderRequired: false,
   updateLoadings: null as null | [string, number],
   updateSuspendings: null as null | [string, number],
   updateCounts: null as null | [string, number],
+  updateRenderRequired: null as null | [string, boolean],
   loadings: {} as { [key: string]: number },
   suspendings: {} as { [key: string]: number },
   counts: {} as { [key: string]: number },
+  renderRequireds: {} as { [key: string]: boolean },
 };
 const newRenderDataflowProvides = () => ({
   renderer: useWebGLRenderer(),
@@ -19,13 +22,13 @@ const newRenderDataflowProvides = () => ({
 });
 type RenderDataflowProps = typeof renderDataflowProps;
 type RenderDataflowProvides = ReturnType<typeof newRenderDataflowProvides>;
-type ToplevelRenderDataflow<PROPS, PROVIDES> = Dataflow<
+export type ToplevelRenderDataflow<PROPS, PROVIDES> = Dataflow<
   RenderDataflowProps & PROPS,
   RenderDataflowProvides & PROVIDES,
   {},
   {}
 >;
-type RenderDataflow<PROPS, PROVIDES, EMITS, INJECTS> = Dataflow<
+export type RenderDataflow<PROPS, PROVIDES, EMITS, INJECTS> = Dataflow<
   RenderDataflowProps & PROPS,
   RenderDataflowProvides & PROVIDES,
   EMITS,
@@ -87,6 +90,18 @@ const handle = <PROPS, PROVIDES>(
     { flush: "sync" }
   );
 
+  // updateRenderRequired
+  watchEffect(
+    () => {
+      if (self.props.updateRenderRequired) {
+        self.props.renderRequireds[self.props.updateRenderRequired[0]] =
+          self.props.updateRenderRequired[1];
+        self.props.updateRenderRequired = null;
+      }
+    },
+    { flush: "sync" }
+  );
+
   // -1
   watch(
     toRef(self.props, "loading"),
@@ -121,6 +136,17 @@ const handle = <PROPS, PROVIDES>(
     },
     { flush: "sync" }
   );
+  watch(
+    toRef(self.props, "renderRequired"),
+    () => {
+      if (self.props.renderRequired) {
+        for (const key in self.props.renderRequireds) {
+          self.props.renderRequireds[key] = true;
+        }
+      }
+    },
+    { flush: "sync" }
+  );
 
   // 集計
   watchEffect(
@@ -142,6 +168,14 @@ const handle = <PROPS, PROVIDES>(
   watchEffect(
     () => {
       self.props.count = objectReduce(self.props.counts, (val) => val);
+    },
+    { flush: "sync" }
+  );
+  watchEffect(
+    () => {
+      self.props.renderRequired = !Object.values(
+        self.props.renderRequireds
+      ).every((val) => !val);
     },
     { flush: "sync" }
   );

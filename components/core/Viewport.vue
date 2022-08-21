@@ -1,7 +1,7 @@
 <template lang="pug">
 Teleport(:to="flow.provides.element")
   .fullscreen
-    slot(name="2d")
+    slot(name="2d", :flow="flow")
 .d-none
   slot(name="3d")
 </template>
