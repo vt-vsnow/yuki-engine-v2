@@ -1,5 +1,6 @@
 import { Dataflow } from "./Dataflow";
 import { watchEffect, watch, toRef } from "vue";
+import { Camera } from "three";
 const renderDataflowProps = {
   loading: 0,
   suspending: 0,
@@ -11,7 +12,11 @@ const renderDataflowProps = {
   suspendings: {} as { [key: string]: number },
   counts: {} as { [key: string]: number },
 };
-const newRenderDataflowProvides = () => ({});
+const newRenderDataflowProvides = () => ({
+  renderer: useWebGLRenderer(),
+  camera: useDefaultCamera() as Camera,
+  element: document.body,
+});
 type RenderDataflowProps = typeof renderDataflowProps;
 type RenderDataflowProvides = ReturnType<typeof newRenderDataflowProvides>;
 type ToplevelRenderDataflow<PROPS, PROVIDES> = Dataflow<
