@@ -4,7 +4,7 @@ div
     template(#2d="{ flow }")
       | {{ flow.props.loading }},{{ flow.props.suspending }}/{{ flow.props.count }}
     template(#3d)
-      CoreObject3D
+      CoreMeshCube
 </template>
 
 <script setup lang="ts"></script>
