@@ -214,25 +214,11 @@ const handle = <PROPS, PROVIDES>(
 
 export const useRenderDataflow = <PROPS, PROVIDES>(
   props: PROPS,
-  provides: PROVIDES,
-  parent?: RenderDataflow<
-    PROPS,
-    PROVIDES,
-    RenderDataflowProps,
-    RenderDataflowProvides
-  >
+  provides: PROVIDES
 ) => {
-  if (parent) {
-    return parent.newChild(
-      { ...renderDataflowProps, ...props },
-      { ...newRenderDataflowProvides(), ...provides },
-      handle
-    );
-  } else {
-    return new Dataflow(
-      { ...renderDataflowProps, ...props },
-      { ...newRenderDataflowProvides(), ...provides },
-      handle
-    );
-  }
+  return new Dataflow(
+    { ...renderDataflowProps, ...props },
+    { ...newRenderDataflowProvides(), ...provides },
+    handle
+  );
 };
