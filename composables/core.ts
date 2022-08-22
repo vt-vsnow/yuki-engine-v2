@@ -1,6 +1,5 @@
 import { PerspectiveCamera, WebGLRenderer } from "three";
 const renderer = new WebGLRenderer();
-renderer.autoClear = false;
 renderer.setClearAlpha(0);
 export const useWebGLRenderer = () => renderer;
 export const useDefaultCamera = () => {
