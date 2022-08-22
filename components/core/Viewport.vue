@@ -8,7 +8,7 @@ Teleport(:to="flow.provides.element")
 
 <script setup lang="ts">
 const flow = useRenderDataflow({}, {});
-provide("flow", flow);
+provide("flow0", flow);
 let running = true;
 onUnmounted(() => {
   running = false;
