@@ -1,4 +1,5 @@
 import { Dataflow } from "./Dataflow";
+import type { EmitFunc, InjectFunc, DataflowHandle } from "./Dataflow";
 import type { Camera } from "three";
 
 const renderDataflowProps = {
@@ -214,25 +215,42 @@ const handle = <PROPS, PROVIDES>(
 
 export const useRenderDataflow = <PROPS, PROVIDES>(
   props: PROPS,
-  provides: PROVIDES,
-  parent?: RenderDataflow<
-    PROPS,
-    PROVIDES,
-    RenderDataflowProps,
-    RenderDataflowProvides
-  >
+  provides: PROVIDES
 ) => {
-  if (parent) {
-    return parent.newChild(
-      { ...renderDataflowProps, ...props },
-      { ...newRenderDataflowProvides(), ...provides },
-      handle
+  type COMBINED_PROPS = RenderDataflowProps & PROPS;
+  type COMBINED_PROVIDES = RenderDataflowProvides & PROVIDES;
+  type COMBINED_EMITS = {};
+  type COMBINED_INJECTS = {};
+  const ret = new Dataflow<
+    COMBINED_PROPS,
+    COMBINED_PROVIDES,
+    COMBINED_EMITS,
+    COMBINED_INJECTS
+  >(
+    { ...props, ...renderDataflowProps },
+    { ...provides, ...newRenderDataflowProvides() },
+    handle
+  );
+  ret.newChild = <CHILD_PROPS, CHILD_PROVIDES>(
+    props: CHILD_PROPS,
+    provides: CHILD_PROVIDES,
+    handle?: DataflowHandle<
+      CHILD_PROPS,
+      CHILD_PROVIDES,
+      COMBINED_PROPS,
+      COMBINED_PROVIDES & COMBINED_INJECTS
+    >,
+    emit?: EmitFunc<COMBINED_PROPS>,
+    inject?: InjectFunc<COMBINED_PROVIDES>
+  ) => {
+    return Dataflow.prototype.newChild.call(
+      ret,
+      props,
+      provides,
+      handle,
+      emit,
+      inject
     );
-  } else {
-    return new Dataflow(
-      { ...renderDataflowProps, ...props },
-      { ...newRenderDataflowProvides(), ...provides },
-      handle
-    );
-  }
+  };
+  return ret;
 };
