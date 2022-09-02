@@ -98,7 +98,7 @@ const handle = <PROPS, PROVIDES>(
     () => {
       if (self.props.addCallback) {
         const key = self.props.addCallback[0];
-        self.props.loadings[key] = 0;
+        self.props.loadings[key] = -1;
         self.props.suspendings[key] = 0;
         self.props.counts[key] = self.props.addCallback[1];
         self.props.renderRequireds[key] = false;

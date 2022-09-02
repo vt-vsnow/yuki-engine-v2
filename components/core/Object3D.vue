@@ -1,9 +1,9 @@
 <template lang="pug"></template>
 
 <script setup lang="ts">
-import type { Scene } from "three";
+import { Object3D, Scene } from "three";
 import type { RenderDataflow } from "~~/composables/RenderDataflow";
-const props = defineProps<{ scene: Scene }>();
+const props = defineProps<{ scene: Object3D }>();
 /* start render flow */
 // get flow
 let flow: RenderDataflow<{}, {}, {}, {}>;
@@ -48,5 +48,6 @@ watchEffect(() => {
 /* end render flow */
 const renderer = childFlow.inject("renderer");
 const camera = childFlow.inject("camera");
-const scene = props.scene;
+const scene = new Scene();
+scene.add(toRaw(props.scene));
 </script>
