@@ -1,4 +1,6 @@
 import { PerspectiveCamera, WebGLRenderer } from "three";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader";
 const renderer = new WebGLRenderer();
 renderer.setClearAlpha(0);
 export const useWebGLRenderer = () => renderer;
@@ -81,3 +83,21 @@ window.addEventListener("load", () => {
 window.addEventListener("resize", onResize);
 
 export const useRandomId = () => Math.random().toString(36).substring(2);
+
+const loader = new GLTFLoader();
+const dracoLoader = new DRACOLoader();
+dracoLoader.setDecoderPath("/draco/");
+loader.setDRACOLoader(dracoLoader);
+export const resource: { [key: string]: { dispose: () => unknown } } = {};
+
+export const useResource = async <T extends { dispose: () => unknown }>(
+  path: string,
+  type: "gltf"
+) => {
+  if (type === "gltf") {
+    // load gltf
+    const model = await loader.loadAsync(path);
+    return model;
+  }
+  return null;
+};
