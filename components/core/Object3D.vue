@@ -15,7 +15,6 @@ for (var i = 0; flow; i++) {
   flow && (nestCount = i);
 }
 flow = inject<RenderDataflow<{}, {}, {}, {}>>("flow" + nestCount, null);
-console.log(nestCount);
 // new child flow
 const childFlow = flow.newChild({}, {});
 // provide child flow
