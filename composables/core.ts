@@ -1,4 +1,6 @@
-import { PerspectiveCamera, WebGLRenderer } from "three";
+import { Mesh, PerspectiveCamera, WebGLRenderer } from "three";
+import { GLTF, GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader";
 const renderer = new WebGLRenderer();
 renderer.setClearAlpha(0);
 export const useWebGLRenderer = () => renderer;
@@ -81,3 +83,38 @@ window.addEventListener("load", () => {
 window.addEventListener("resize", onResize);
 
 export const useRandomId = () => Math.random().toString(36).substring(2);
+
+const loader = new GLTFLoader();
+const dracoLoader = new DRACOLoader();
+dracoLoader.setDecoderPath("/draco/");
+dracoLoader.preload();
+loader.setDRACOLoader(dracoLoader);
+const hasDisposeFunction = (object): object is { dispose: () => unknown } => {
+  return typeof object["dispose"] === "function";
+};
+const finalizer = new FinalizationRegistry((heldValue) => {
+  if (hasDisposeFunction(heldValue)) {
+    console.log(heldValue);
+    heldValue.dispose();
+  }
+});
+
+export const useResource = async <T extends "gltf">(path: string, type: T) => {
+  if (type === "gltf") {
+    // load gltf
+    const model = await loader.loadAsync(path);
+    const objectKeys = [];
+    model.scene.traverse((object) => {
+      if (object instanceof Mesh) {
+        const geometryKey = [path + "/" + object.name + ".geometry"];
+        const materialKey = [path + "/" + object.name + ".material"];
+        objectKeys.push(geometryKey);
+        objectKeys.push(materialKey);
+        finalizer.register(geometryKey, object.geometry);
+        finalizer.register(materialKey, object.material);
+      }
+    });
+    return [model, objectKeys] as [GLTF, [string][]];
+  }
+  return null;
+};
