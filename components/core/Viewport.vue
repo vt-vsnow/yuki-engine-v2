@@ -30,6 +30,7 @@ watch(
       if (!control) {
         const targetElement = document.getElementsByClassName("fullscreen")[0];
         targetElement &&
+          //@ts-ignore
           (control = new OrbitControls(flow.provides.camera, targetElement));
       }
 
