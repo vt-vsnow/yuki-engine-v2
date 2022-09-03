@@ -1,7 +1,7 @@
 <template lang="pug"></template>
 
 <script setup lang="ts">
-import { Object3D, Scene } from "three";
+import type { Object3D } from "three";
 import type { RenderDataflow } from "~~/composables/RenderDataflow";
 const props = defineProps<{ scene: Object3D }>();
 /* start render flow */
