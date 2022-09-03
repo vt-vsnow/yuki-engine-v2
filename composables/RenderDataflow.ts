@@ -246,7 +246,7 @@ export const useRenderDataflow = <PROPS, PROVIDES>(
   ) => {
     return Dataflow.prototype.newChild.call(
       ret,
-      { ...props, ...renderDataflowProps },
+      { ...renderDataflowProps, ...props },
       provides,
       handle,
       emit,
