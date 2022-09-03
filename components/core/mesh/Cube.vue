@@ -27,13 +27,16 @@ onUnmounted(() => {
 });
 /* start render flow */
 // get flow
-let flow: RenderDataflow<{}, {}, {}, {}>;
+let flow: RenderDataflow<{}, {}, {}, {}> = inject<
+  RenderDataflow<{}, {}, {}, {}>
+>("flow0", null);
 let nestCount = 0;
 for (var i = 0; flow; i++) {
   flow = inject<RenderDataflow<{}, {}, {}, {}>>("flow" + i, null);
   flow && (nestCount = i);
 }
 flow = inject<RenderDataflow<{}, {}, {}, {}>>("flow" + nestCount, null);
+console.log(nestCount);
 // new child flow
 const childFlow = flow.newChild({}, {});
 // provide child flow

@@ -7,6 +7,8 @@ Teleport(:to="flow.provides.element")
 </template>
 
 <script setup lang="ts">
+import type { Scene } from "three";
+
 const flow = useRenderDataflow({}, {});
 provide("flow0", flow);
 let running = true;
@@ -18,6 +20,14 @@ const render = () => {
   flow.props.renderRequired = true;
 };
 render();
+watch(toRef(flow.props, "renderRequired"), (val) => {
+  if (!val) {
+    flow.provides.renderer.render(
+      toRaw(flow.provides.object3d as Scene),
+      flow.provides.camera
+    );
+  }
+});
 </script>
 
 <style scoped lang="scss">

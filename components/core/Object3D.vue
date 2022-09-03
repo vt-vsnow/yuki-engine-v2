@@ -6,13 +6,16 @@ import type { RenderDataflow } from "~~/composables/RenderDataflow";
 const props = defineProps<{ scene: Scene }>();
 /* start render flow */
 // get flow
-let flow: RenderDataflow<{}, {}, {}, {}>;
+let flow: RenderDataflow<{}, {}, {}, {}> = inject<
+  RenderDataflow<{}, {}, {}, {}>
+>("flow0", null);
 let nestCount = 0;
 for (var i = 0; flow; i++) {
   flow = inject<RenderDataflow<{}, {}, {}, {}>>("flow" + i, null);
   flow && (nestCount = i);
 }
 flow = inject<RenderDataflow<{}, {}, {}, {}>>("flow" + nestCount, null);
+console.log(nestCount);
 // new child flow
 const childFlow = flow.newChild({}, {});
 // provide child flow
@@ -41,12 +44,12 @@ watchEffect(() => {
 watchEffect(() => {
   if (flow.props.renderRequireds[id]) {
     // on draw
-    renderer.render(scene, camera);
     childFlow.emit("updateRenderRequired", [id, false]);
   }
 });
 /* end render flow */
-const renderer = childFlow.inject("renderer");
-const camera = childFlow.inject("camera");
-const scene = props.scene;
+childFlow.inject("object3d").add(props.scene);
+onUnmounted(() => {
+  childFlow.inject("object3d").remove(props.scene);
+});
 </script>

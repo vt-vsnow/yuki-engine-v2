@@ -1,6 +1,6 @@
 import { Dataflow } from "./Dataflow";
 import type { EmitFunc, InjectFunc, DataflowHandle } from "./Dataflow";
-import type { Camera } from "three";
+import { Camera, Object3D, Scene } from "three";
 
 const renderDataflowProps = {
   loading: 0,
@@ -22,6 +22,7 @@ const newRenderDataflowProvides = () => ({
   renderer: useWebGLRenderer(),
   camera: useDefaultCamera() as Camera,
   element: document.body,
+  object3d: new Scene() as Object3D,
 });
 type RenderDataflowProps = typeof renderDataflowProps;
 type RenderDataflowProvides = ReturnType<typeof newRenderDataflowProvides>;
@@ -245,7 +246,7 @@ export const useRenderDataflow = <PROPS, PROVIDES>(
   ) => {
     return Dataflow.prototype.newChild.call(
       ret,
-      props,
+      { ...props, ...renderDataflowProps },
       provides,
       handle,
       emit,
