@@ -3,7 +3,7 @@
 <script setup lang="ts">
 import type { Object3D } from "three";
 import type { RenderDataflow } from "~~/composables/RenderDataflow";
-const props = defineProps<{ scene: Object3D }>();
+const props = defineProps<{ object3d: Object3D }>();
 /* start render flow */
 // get flow
 let flow: RenderDataflow<{}, {}, {}, {}> = inject<
@@ -47,8 +47,8 @@ watchEffect(() => {
   }
 });
 /* end render flow */
-childFlow.inject("object3d").add(props.scene);
+childFlow.inject("object3d").add(props.object3d);
 onUnmounted(() => {
-  childFlow.inject("object3d").remove(props.scene);
+  childFlow.inject("object3d").remove(props.object3d);
 });
 </script>

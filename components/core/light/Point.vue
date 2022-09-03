@@ -1,20 +1,19 @@
 <template lang="pug">
-CoreObject3D(v-if="object3d", v-bind="{ object3d }")
+CoreObject3D(:object3d="light")
+CoreObject3D(:object3d="helper")
 </template>
-
 <script setup lang="ts">
-import type { Mesh, Object3D } from "three";
-import { useResource } from "~~/composables/core";
-import type { RenderDataflow } from "~~/composables/RenderDataflow";
+/* start render flow */
 
-const props = withDefaults(defineProps<{ path: string; shadow?: boolean }>(), {
+import { CameraHelper, PointLight } from "three";
+import type { RenderDataflow } from "~~/composables/RenderDataflow";
+const props = withDefaults(defineProps<{ shadow?: boolean }>(), {
   shadow: true,
 });
-const object3d = ref<Object3D>();
-let resourceRef;
-/* start render flow */
 // get flow
-let flow: RenderDataflow<{}, {}, {}, {}>;
+let flow: RenderDataflow<{}, {}, {}, {}> = inject<
+  RenderDataflow<{}, {}, {}, {}>
+>("flow0", null);
 let nestCount = 0;
 for (var i = 0; flow; i++) {
   flow = inject<RenderDataflow<{}, {}, {}, {}>>("flow" + i, null);
@@ -23,7 +22,6 @@ for (var i = 0; flow; i++) {
 flow = inject<RenderDataflow<{}, {}, {}, {}>>("flow" + nestCount, null);
 // new child flow
 const childFlow = flow.newChild({}, {});
-
 // provide child flow
 provide("flow" + (nestCount + 1), childFlow);
 // get random id
@@ -35,21 +33,9 @@ onUnmounted(() => {
   childFlow.emit("removeCallback", id);
 });
 
-watchEffect(async () => {
+watchEffect(() => {
   if (flow.props.loadings[id] === -1) {
     // on load
-    console.log(props.path);
-    const result = await useResource(props.path, "gltf");
-    object3d.value = result[0].scene;
-    resourceRef = result[1];
-    if (props.shadow) {
-      object3d.value.traverse((object) => {
-        if (object.type === "Mesh") {
-          (object as Mesh).castShadow = true;
-          (object as Mesh).receiveShadow = true;
-        }
-      });
-    }
     childFlow.emit("updateLoadings", [id, 0]);
   }
 });
@@ -66,4 +52,12 @@ watchEffect(() => {
   }
 });
 /* end render flow */
+const light = new PointLight(0xffffff, 1);
+let helper;
+light.position.set(1, 5, 1);
+if (props.shadow) {
+  light.castShadow = true;
+  light.shadow.bias = -0.0001;
+  helper = new CameraHelper(light.shadow.camera);
+}
 </script>

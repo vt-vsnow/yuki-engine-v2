@@ -1,5 +1,5 @@
 <template lang="pug">
-CoreObject3D(v-bind="{ scene: o.scene }")
+CoreObject3D(v-bind="{ object3d: o.scene }")
 </template>
 <script setup lang="ts">
 import {
