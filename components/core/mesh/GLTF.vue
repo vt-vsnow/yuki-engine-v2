@@ -26,7 +26,7 @@ const props = withDefaults(
   }
 );
 const object3d = ref<Object3D>();
-// @ts-ignore
+
 let resourceRef;
 /* start render flow */
 // get flow
