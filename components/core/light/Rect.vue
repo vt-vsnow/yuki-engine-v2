@@ -8,7 +8,6 @@ import { RectAreaLight } from "three";
 import type { RenderDataflow } from "~~/composables/RenderDataflow";
 const props = withDefaults(
   defineProps<{
-    shadow?: boolean;
     dx?: number;
     dy?: number;
     dz?: number;
