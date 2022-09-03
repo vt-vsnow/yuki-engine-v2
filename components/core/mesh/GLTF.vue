@@ -82,4 +82,12 @@ watchEffect(() => {
   }
 });
 /* end render flow */
+onUnmounted(() => {
+  if (resourceRef) {
+    for (const object of resourceRef) {
+      console.log(object.name);
+      object.dispose();
+    }
+  }
+});
 </script>

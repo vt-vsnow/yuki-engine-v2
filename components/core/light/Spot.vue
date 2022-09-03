@@ -4,7 +4,7 @@ CoreObject3D(v-bind="props", :object3d="light")
 <script setup lang="ts">
 /* start render flow */
 
-import { PointLight } from "three";
+import { SpotLight } from "three";
 import type { RenderDataflow } from "~~/composables/RenderDataflow";
 const props = withDefaults(
   defineProps<{
@@ -20,11 +20,15 @@ const props = withDefaults(
     sz?: number;
     strength?: number;
     color?: number;
+    angle?: number;
+    penumbra?: number;
   }>(),
   {
     shadow: true,
     strength: 1,
     color: 0xffffff,
+    angle: Math.PI / 2,
+    penumbra: 0,
   }
 );
 // get flow
@@ -69,15 +73,17 @@ watchEffect(() => {
   }
 });
 /* end render flow */
-const light = new PointLight();
+const light = new SpotLight(0xffffff, 1);
 light.decay = 2;
 if (props.shadow) {
   light.castShadow = true;
-  light.shadow.bias = -0.0001;
+  light.shadow.bias = -0.001;
   light.shadow.camera.matrixAutoUpdate = true;
 }
 watchEffect(() => {
   light.color.set(props.color);
   light.intensity = props.strength;
+  light.penumbra = props.penumbra;
+  light.angle = props.angle;
 });
 </script>

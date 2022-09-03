@@ -4,11 +4,10 @@ CoreObject3D(v-bind="props", :object3d="light")
 <script setup lang="ts">
 /* start render flow */
 
-import { PointLight } from "three";
+import { RectAreaLight } from "three";
 import type { RenderDataflow } from "~~/composables/RenderDataflow";
 const props = withDefaults(
   defineProps<{
-    shadow?: boolean;
     dx?: number;
     dy?: number;
     dz?: number;
@@ -20,11 +19,14 @@ const props = withDefaults(
     sz?: number;
     strength?: number;
     color?: number;
+    width?: number;
+    height?: number;
   }>(),
   {
-    shadow: true,
     strength: 1,
     color: 0xffffff,
+    width: 1,
+    height: 1,
   }
 );
 // get flow
@@ -69,15 +71,12 @@ watchEffect(() => {
   }
 });
 /* end render flow */
-const light = new PointLight();
-light.decay = 2;
-if (props.shadow) {
-  light.castShadow = true;
-  light.shadow.bias = -0.0001;
-  light.shadow.camera.matrixAutoUpdate = true;
-}
+const light = new RectAreaLight();
+
 watchEffect(() => {
   light.color.set(props.color);
   light.intensity = props.strength;
+  light.width = props.width;
+  light.height = props.height;
 });
 </script>

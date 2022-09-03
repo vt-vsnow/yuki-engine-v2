@@ -2,10 +2,16 @@
 div
   CoreViewport
     template(#2d="{ flow }")
-      | {{ flow.props.loading }},{{ flow.props.suspending }}/{{ flow.props.count }}
-    template(#3d)
-      CoreMeshGLTF(:path="path", :rz="3.1415 / 8")
-      CoreLightPoint(:dy="5")
+      span(style="color: white") {{ flow.props.loading }},{{ flow.props.suspending }}/{{ flow.props.count }}
+    template(#3d="{}")
+      CoreMeshGLTF(:path="path")
+      CoreLightSpot(
+        :dy="5",
+        :strength="50",
+        :color="0xff88ff",
+        :penumbra="1",
+        :angle="3.1415 / 4"
+      )
 </template>
 
 <script setup lang="ts">

@@ -4,7 +4,7 @@ CoreObject3D(v-bind="props", :object3d="light")
 <script setup lang="ts">
 /* start render flow */
 
-import { PointLight } from "three";
+import { DirectionalLight } from "three";
 import type { RenderDataflow } from "~~/composables/RenderDataflow";
 const props = withDefaults(
   defineProps<{
@@ -69,8 +69,8 @@ watchEffect(() => {
   }
 });
 /* end render flow */
-const light = new PointLight();
-light.decay = 2;
+const light = new DirectionalLight();
+
 if (props.shadow) {
   light.castShadow = true;
   light.shadow.bias = -0.0001;
