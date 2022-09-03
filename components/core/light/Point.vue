@@ -1,11 +1,14 @@
-<template lang="pug"></template>
-
+<template lang="pug">
+CoreObject3D(v-bind="props", :object3d="light")
+</template>
 <script setup lang="ts">
-import { Object3D } from "three";
+/* start render flow */
+
+import { PointLight } from "three";
 import type { RenderDataflow } from "~~/composables/RenderDataflow";
 const props = withDefaults(
   defineProps<{
-    object3d: Object3D;
+    shadow?: boolean;
     dx?: number;
     dy?: number;
     dz?: number;
@@ -15,22 +18,11 @@ const props = withDefaults(
     sx?: number;
     sy?: number;
     sz?: number;
-    rotOrder?: string;
   }>(),
   {
-    dx: 0,
-    dy: 0,
-    dz: 0,
-    rx: 0,
-    ry: 0,
-    rz: 0,
-    sx: 1,
-    sy: 1,
-    sz: 1,
-    rotOrder: "XYZ",
+    shadow: true,
   }
 );
-/* start render flow */
 // get flow
 let flow: RenderDataflow<{}, {}, {}, {}> = inject<
   RenderDataflow<{}, {}, {}, {}>
@@ -73,23 +65,10 @@ watchEffect(() => {
   }
 });
 /* end render flow */
-const wrapper = new Object3D();
-wrapper.add(toRaw(props.object3d));
-childFlow.inject("object3d").add(wrapper);
-onUnmounted(() => {
-  childFlow.inject("object3d").remove(wrapper);
-});
-watch(
-  props,
-  () => {
-    wrapper.position.set(props.dx, props.dy, props.dz);
-    wrapper.rotation.set(props.rx, props.ry, props.rz, props.rotOrder);
-    wrapper.scale.set(props.sx, props.sy, props.sz);
-    wrapper.traverse((object) => {
-      object.updateMatrix();
-    });
-    wrapper.updateMatrix();
-  },
-  { immediate: true }
-);
+const light = new PointLight(0xffffff, 1);
+if (props.shadow) {
+  light.castShadow = true;
+  light.shadow.bias = -0.0001;
+  light.shadow.camera.matrixAutoUpdate = true;
+}
 </script>

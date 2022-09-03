@@ -1,8 +1,17 @@
-import { Mesh, PerspectiveCamera, WebGLRenderer } from "three";
+import {
+  Mesh,
+  Object3D,
+  PCFSoftShadowMap,
+  PerspectiveCamera,
+  WebGLRenderer,
+} from "three";
 import { GLTF, GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader";
 const renderer = new WebGLRenderer();
 renderer.setClearAlpha(0);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = PCFSoftShadowMap;
+Object3D.DefaultMatrixAutoUpdate = false;
 export const useWebGLRenderer = () => renderer;
 export const useDefaultCamera = () => {
   const ret = new PerspectiveCamera(

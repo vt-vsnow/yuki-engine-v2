@@ -8,6 +8,7 @@ Teleport(:to="flow.provides.element")
 
 <script setup lang="ts">
 import type { Scene } from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 const flow = useRenderDataflow({}, {});
 provide("flow0", flow);
@@ -20,14 +21,27 @@ const render = () => {
   flow.props.renderRequired = true;
 };
 render();
-watch(toRef(flow.props, "renderRequired"), (val) => {
-  if (!val) {
-    flow.provides.renderer.render(
-      toRaw(flow.provides.object3d as Scene),
-      flow.provides.camera
-    );
-  }
-});
+let control;
+flow.provides.camera.matrixAutoUpdate = true;
+watch(
+  toRef(flow.props, "renderRequired"),
+  (val) => {
+    if (!val) {
+      if (!control) {
+        const targetElement = document.getElementsByClassName("fullscreen")[0];
+        targetElement &&
+          (control = new OrbitControls(flow.provides.camera, targetElement));
+      }
+
+      control.update();
+      flow.provides.renderer.render(
+        toRaw(flow.provides.object3d as Scene),
+        flow.provides.camera
+      );
+    }
+  },
+  { flush: "sync" }
+);
 </script>
 
 <style scoped lang="scss">

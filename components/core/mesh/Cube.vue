@@ -1,5 +1,5 @@
 <template lang="pug">
-CoreObject3D(v-bind="{ scene: o.scene }")
+CoreObject3D(v-bind="props", :object3d="o.scene")
 </template>
 <script setup lang="ts">
 import {
@@ -10,7 +10,7 @@ import {
   Scene,
 } from "three";
 import type { RenderDataflow } from "~~/composables/RenderDataflow";
-
+const props = defineProps<{}>();
 const o = useGLObjects() as {
   scene: Scene;
   mesh: Mesh;
