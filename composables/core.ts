@@ -15,6 +15,21 @@ renderer.shadowMap.type = PCFSoftShadowMap;
 renderer.physicallyCorrectLights = true;
 Object3D.DefaultMatrixAutoUpdate = false;
 export const useWebGLRenderer = () => renderer;
+const autoCameras = new Set<WeakRef<PerspectiveCamera>>();
+export const setAutomaticCameraRatio = (camera: PerspectiveCamera) => {
+  autoCameras.add(new WeakRef(camera));
+};
+window.addEventListener("resize", () => {
+  for (const camera of autoCameras) {
+    const derefed = camera.deref();
+    if (derefed) {
+      derefed.aspect = window.innerWidth / window.innerHeight;
+      derefed.updateProjectionMatrix();
+    } else {
+      autoCameras.delete(camera);
+    }
+  }
+});
 export const useDefaultCamera = () => {
   const ret = new PerspectiveCamera(
     60,
@@ -24,6 +39,7 @@ export const useDefaultCamera = () => {
   );
   ret.position.set(2, 2, 2);
   ret.lookAt(0, 0, 0);
+  setAutomaticCameraRatio(ret);
   return ret;
 };
 export const useGLObjects = () =>
