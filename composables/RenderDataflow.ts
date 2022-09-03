@@ -228,8 +228,8 @@ export const useRenderDataflow = <PROPS, PROVIDES>(
     COMBINED_EMITS,
     COMBINED_INJECTS
   >(
-    { ...props, ...renderDataflowProps },
-    { ...provides, ...newRenderDataflowProvides() },
+    { ...renderDataflowProps, ...props },
+    { ...newRenderDataflowProvides(), ...provides },
     handle
   );
   ret.newChild = <CHILD_PROPS, CHILD_PROVIDES>(
