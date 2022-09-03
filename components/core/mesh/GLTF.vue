@@ -54,7 +54,6 @@ onUnmounted(() => {
 watchEffect(async () => {
   if (flow.props.loadings[id] === -1) {
     // on load
-    console.log(props.path);
     const result = await useResource(props.path, "gltf");
     object3d.value = result[0].scene;
     resourceRef = result[1];
