@@ -22,6 +22,7 @@ const render = () => {
 };
 render();
 let control;
+flow.provides.camera.matrixAutoUpdate = true;
 watch(
   toRef(flow.props, "renderRequired"),
   (val) => {
@@ -31,6 +32,7 @@ watch(
         targetElement &&
           (control = new OrbitControls(flow.provides.camera, targetElement));
       }
+
       control.update();
       flow.provides.renderer.render(
         toRaw(flow.provides.object3d as Scene),

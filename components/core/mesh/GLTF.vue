@@ -1,5 +1,5 @@
 <template lang="pug">
-CoreObject3D(v-if="object3d", v-bind="{ object3d }")
+CoreObject3D(v-if="object3d", v-bind="props", :object3d="object3d")
 </template>
 
 <script setup lang="ts">
@@ -7,10 +7,26 @@ import type { Mesh, Object3D } from "three";
 import { useResource } from "~~/composables/core";
 import type { RenderDataflow } from "~~/composables/RenderDataflow";
 
-const props = withDefaults(defineProps<{ path: string; shadow?: boolean }>(), {
-  shadow: true,
-});
+const props = withDefaults(
+  defineProps<{
+    path: string;
+    shadow?: boolean;
+    dx?: number;
+    dy?: number;
+    dz?: number;
+    rx?: number;
+    ry?: number;
+    rz?: number;
+    sx?: number;
+    sy?: number;
+    sz?: number;
+  }>(),
+  {
+    shadow: true,
+  }
+);
 const object3d = ref<Object3D>();
+// @ts-ignore
 let resourceRef;
 /* start render flow */
 // get flow

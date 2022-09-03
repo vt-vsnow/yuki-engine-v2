@@ -1,5 +1,6 @@
 import {
   Mesh,
+  Object3D,
   PCFSoftShadowMap,
   PerspectiveCamera,
   WebGLRenderer,
@@ -10,6 +11,7 @@ const renderer = new WebGLRenderer();
 renderer.setClearAlpha(0);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = PCFSoftShadowMap;
+Object3D.DefaultMatrixAutoUpdate = false;
 export const useWebGLRenderer = () => renderer;
 export const useDefaultCamera = () => {
   const ret = new PerspectiveCamera(

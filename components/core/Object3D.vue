@@ -1,9 +1,35 @@
 <template lang="pug"></template>
 
 <script setup lang="ts">
-import type { Object3D } from "three";
+import { Object3D } from "three";
 import type { RenderDataflow } from "~~/composables/RenderDataflow";
-const props = defineProps<{ object3d: Object3D }>();
+const props = withDefaults(
+  defineProps<{
+    object3d: Object3D;
+    dx?: number;
+    dy?: number;
+    dz?: number;
+    rx?: number;
+    ry?: number;
+    rz?: number;
+    sx?: number;
+    sy?: number;
+    sz?: number;
+    rotOrder?: string;
+  }>(),
+  {
+    dx: 0,
+    dy: 0,
+    dz: 0,
+    rx: 0,
+    ry: 0,
+    rz: 0,
+    sx: 1,
+    sy: 1,
+    sz: 1,
+    rotOrder: "XYZ",
+  }
+);
 /* start render flow */
 // get flow
 let flow: RenderDataflow<{}, {}, {}, {}> = inject<
@@ -47,8 +73,23 @@ watchEffect(() => {
   }
 });
 /* end render flow */
-childFlow.inject("object3d").add(props.object3d);
+const wrapper = new Object3D();
+wrapper.add(toRaw(props.object3d));
+childFlow.inject("object3d").add(wrapper);
 onUnmounted(() => {
-  childFlow.inject("object3d").remove(props.object3d);
+  childFlow.inject("object3d").remove(wrapper);
 });
+watch(
+  props,
+  () => {
+    wrapper.position.set(props.dx, props.dy, props.dz);
+    wrapper.rotation.set(props.rx, props.ry, props.rz, props.rotOrder);
+    wrapper.scale.set(props.sx, props.sy, props.sz);
+    wrapper.traverse((object) => {
+      object.updateMatrix();
+    });
+    wrapper.updateMatrix();
+  },
+  { immediate: true }
+);
 </script>

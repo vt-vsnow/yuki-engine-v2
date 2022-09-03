@@ -4,8 +4,8 @@ div
     template(#2d="{ flow }")
       | {{ flow.props.loading }},{{ flow.props.suspending }}/{{ flow.props.count }}
     template(#3d)
-      CoreMeshGLTF(:path="path")
-      CoreLightPoint
+      CoreMeshGLTF(:path="path", :rz="3.1415 / 8")
+      CoreLightPoint(:dy="5")
 </template>
 
 <script setup lang="ts">

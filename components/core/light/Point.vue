@@ -1,15 +1,28 @@
 <template lang="pug">
-CoreObject3D(:object3d="light")
-CoreObject3D(:object3d="helper")
+CoreObject3D(v-bind="props", :object3d="light")
 </template>
 <script setup lang="ts">
 /* start render flow */
 
-import { CameraHelper, PointLight } from "three";
+import { PointLight } from "three";
 import type { RenderDataflow } from "~~/composables/RenderDataflow";
-const props = withDefaults(defineProps<{ shadow?: boolean }>(), {
-  shadow: true,
-});
+const props = withDefaults(
+  defineProps<{
+    shadow?: boolean;
+    dx?: number;
+    dy?: number;
+    dz?: number;
+    rx?: number;
+    ry?: number;
+    rz?: number;
+    sx?: number;
+    sy?: number;
+    sz?: number;
+  }>(),
+  {
+    shadow: true,
+  }
+);
 // get flow
 let flow: RenderDataflow<{}, {}, {}, {}> = inject<
   RenderDataflow<{}, {}, {}, {}>
@@ -53,11 +66,9 @@ watchEffect(() => {
 });
 /* end render flow */
 const light = new PointLight(0xffffff, 1);
-let helper;
-light.position.set(1, 5, 1);
 if (props.shadow) {
   light.castShadow = true;
   light.shadow.bias = -0.0001;
-  helper = new CameraHelper(light.shadow.camera);
+  light.shadow.camera.matrixAutoUpdate = true;
 }
 </script>
