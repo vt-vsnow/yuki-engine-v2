@@ -1,11 +1,10 @@
 <template lang="pug">
 div
   CoreViewport
-    template(#2d="{ flow }")
-      span(style="color: white") {{ flow.props.loading }},{{ flow.props.suspending }}/{{ flow.props.count }}
     template(#3d="{}")
       CoreGroup
-        CoreMeshGLTF(:path="path")
+        CoreMeshGLTF(v-bind="{ path }")
+        CoreMeshCube(v-bind="{ dx: -6, dy: 1, dz: 1 }")
 </template>
 
 <script setup lang="ts">

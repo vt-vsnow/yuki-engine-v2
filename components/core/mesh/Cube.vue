@@ -2,7 +2,7 @@
 CoreObject3D(v-bind="props", :object3d="o.mesh")
 </template>
 <script setup lang="ts">
-import { BoxBufferGeometry, Material, Mesh, MeshNormalMaterial } from "three";
+import { BoxBufferGeometry, Material, Mesh, MeshStandardMaterial } from "three";
 import type { RenderDataflow } from "~~/composables/RenderDataflow";
 const props = withDefaults(
   defineProps<{
@@ -35,12 +35,14 @@ const o = useGLObjects() as {
   geometry: BoxBufferGeometry;
   material: Material;
 };
-o.material = new MeshNormalMaterial();
+o.material = new MeshStandardMaterial();
 o.geometry = new BoxBufferGeometry(1, 1, 1);
 o.mesh = new Mesh(o.geometry, o.material);
 onUnmounted(() => {
   finalizeGLObjects(o);
 });
+o.mesh.receiveShadow = true;
+o.mesh.castShadow = true;
 /* start render flow */
 // get flow
 let flow: RenderDataflow<{}, {}> = inject<RenderDataflow<{}, {}>>(
