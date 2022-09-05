@@ -3,7 +3,7 @@ CoreObject3D(v-if="object3d", v-bind="props", :object3d="object3d")
 </template>
 
 <script setup lang="ts">
-import type { Mesh, Object3D } from "three";
+import { Light, Mesh, Object3D } from "three";
 import { useResource } from "~~/composables/core";
 import type { RenderDataflow } from "~~/composables/RenderDataflow";
 
@@ -62,6 +62,10 @@ watchEffect(async () => {
         if (object.type === "Mesh") {
           (object as Mesh).castShadow = true;
           (object as Mesh).receiveShadow = true;
+        } else if (object instanceof Light) {
+          (object as Light).castShadow = true;
+          (object as Light).shadow.bias = -0.001;
+          (object as Light).shadow.camera.matrixAutoUpdate = true;
         }
       });
     }

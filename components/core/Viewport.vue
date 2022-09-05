@@ -9,9 +9,27 @@ Teleport(:to="flow.provides.element")
 <script setup lang="ts">
 import type { Scene } from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer";
+import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
+import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass";
+import { FXAAShader } from "three/examples/jsm/shaders/FXAAShader";
 
 const flow = useRenderDataflow({}, {});
 provide("flow0", flow);
+const renderer = toRaw(flow.provides.renderer);
+const composer = new EffectComposer(renderer);
+const renderPass = new RenderPass(
+  toRaw(flow.provides.object3d as Scene),
+  flow.provides.camera
+);
+const fxaaPass = new ShaderPass(FXAAShader);
+composer.addPass(renderPass);
+composer.addPass(fxaaPass);
+const pixelRatio = renderer.getPixelRatio();
+fxaaPass.material.uniforms["resolution"].value.x =
+  1 / (renderer.domElement.offsetWidth * pixelRatio);
+fxaaPass.material.uniforms["resolution"].value.y =
+  1 / (renderer.domElement.offsetHeight * pixelRatio);
 let running = true;
 onUnmounted(() => {
   running = false;
@@ -34,10 +52,7 @@ watch(
           (control = new OrbitControls(flow.provides.camera, targetElement));
       }
       control.update();
-      flow.provides.renderer.render(
-        toRaw(flow.provides.object3d as Scene),
-        flow.provides.camera
-      );
+      composer.render();
     }
   },
   { flush: "sync" }
