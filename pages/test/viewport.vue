@@ -12,8 +12,9 @@ div
         :penumbra="1",
         :angle="3.1415 / 4"
       )
+      CoreLightAmbient
 </template>
 
 <script setup lang="ts">
-const path: string = (await import(`/assets/desk.glb?url`)).default;
+const path: string = (await import("/assets/desk.glb?url")).default;
 </script>

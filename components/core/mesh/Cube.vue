@@ -1,41 +1,58 @@
 <template lang="pug">
-CoreObject3D(v-bind="props", :object3d="o.scene")
+CoreObject3D(v-bind="props", :object3d="o.mesh")
 </template>
 <script setup lang="ts">
-import {
-  BoxBufferGeometry,
-  Material,
-  Mesh,
-  MeshNormalMaterial,
-  Scene,
-} from "three";
+import { BoxBufferGeometry, Material, Mesh, MeshNormalMaterial } from "three";
 import type { RenderDataflow } from "~~/composables/RenderDataflow";
-const props = defineProps<{}>();
+const props = withDefaults(
+  defineProps<{
+    dx?: number;
+    dy?: number;
+    dz?: number;
+    rx?: number;
+    ry?: number;
+    rz?: number;
+    sx?: number;
+    sy?: number;
+    sz?: number;
+    rotOrder?: string;
+  }>(),
+  {
+    dx: 0,
+    dy: 0,
+    dz: 0,
+    rx: 0,
+    ry: 0,
+    rz: 0,
+    sx: 1,
+    sy: 1,
+    sz: 1,
+    rotOrder: "XYZ",
+  }
+);
 const o = useGLObjects() as {
-  scene: Scene;
   mesh: Mesh;
   geometry: BoxBufferGeometry;
   material: Material;
 };
-o.scene = new Scene();
 o.material = new MeshNormalMaterial();
 o.geometry = new BoxBufferGeometry(1, 1, 1);
 o.mesh = new Mesh(o.geometry, o.material);
-o.scene.add(o.mesh);
 onUnmounted(() => {
   finalizeGLObjects(o);
 });
 /* start render flow */
 // get flow
-let flow: RenderDataflow<{}, {}, {}, {}> = inject<
-  RenderDataflow<{}, {}, {}, {}>
->("flow0", null);
+let flow: RenderDataflow<{}, {}> = inject<RenderDataflow<{}, {}>>(
+  "flow0",
+  null
+);
 let nestCount = 0;
 for (var i = 0; flow; i++) {
-  flow = inject<RenderDataflow<{}, {}, {}, {}>>("flow" + i, null);
+  flow = inject<RenderDataflow<{}, {}>>("flow" + i, null);
   flow && (nestCount = i);
 }
-flow = inject<RenderDataflow<{}, {}, {}, {}>>("flow" + nestCount, null);
+flow = inject<RenderDataflow<{}, {}>>("flow" + nestCount, null);
 // new child flow
 const childFlow = flow.newChild({}, {});
 // provide child flow
@@ -68,4 +85,5 @@ watchEffect(() => {
   }
 });
 /* end render flow */
+console.log(toRaw(childFlow.inject("object3d")));
 </script>
