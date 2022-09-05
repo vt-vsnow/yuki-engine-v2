@@ -13,8 +13,12 @@ import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
 import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass";
 import { FXAAShader } from "three/examples/jsm/shaders/FXAAShader";
-
+defineProps<{ flow: ReturnType<typeof useRenderDataflow> }>();
+const emit = defineEmits<{
+  (e: "update:flow", val: ReturnType<typeof useRenderDataflow>): void;
+}>();
 const flow = useRenderDataflow({}, {});
+emit("update:flow", flow);
 provide("flow0", flow);
 const renderer = toRaw(flow.provides.renderer);
 const composer = new EffectComposer(renderer);
