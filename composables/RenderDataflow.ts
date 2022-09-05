@@ -42,7 +42,7 @@ const objectReduce = (
   }
   return sum;
 };
-const renderDataflowHandle = <PROPS, PROVIDES>(
+const renderDataflowhandler = <PROPS, PROVIDES>(
   self: Dataflow<
     RenderDataflowProps & PROPS,
     RenderDataflowProvides & PROVIDES,
@@ -212,12 +212,12 @@ class RenderDataflowLocal<PROPS, PROVIDES> extends Dataflow<
   RenderDataflowProps & PROPS,
   RenderDataflowProvides & PROVIDES
 > {
-  constructor(props: PROPS, provides: PROVIDES, _handle?, emit?, inject?) {
+  constructor(props: PROPS, provides: PROVIDES, _handler?, emit?, inject?) {
     super(
       { ...renderDataflowProps, ...props },
       // @ts-ignore
       provides,
-      renderDataflowHandle,
+      renderDataflowhandler,
       emit,
       inject
     );
@@ -231,7 +231,7 @@ class RenderDataflowLocal<PROPS, PROVIDES> extends Dataflow<
       { ...renderDataflowProps, ...props },
       provides,
       // @ts-ignore
-      renderDataflowHandle
+      renderDataflowhandler
     );
   }
 }

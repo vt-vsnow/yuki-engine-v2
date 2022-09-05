@@ -4,7 +4,7 @@ export type EmitFunc<EMITS> = {
 export type InjectFunc<INJECTS> = {
   <T extends keyof INJECTS>(e: T): INJECTS[T];
 };
-export type DataflowHandle<PROPS, PROVIDES, EMITS, INJECTS> = (
+export type Dataflowhandler<PROPS, PROVIDES, EMITS, INJECTS> = (
   flow: Dataflow<PROPS, PROVIDES, EMITS, INJECTS>
 ) => void;
 
@@ -34,12 +34,12 @@ export class Dataflow<
    */
   public readonly inject: InjectFunc<INJECTS>;
   /**
-   * props,providesと、handle,emit,inject関数(optional)からインスタンスを初期化します。
+   * props,providesと、handler,emit,inject関数(optional)からインスタンスを初期化します。
    */
   constructor(
     props: PROPS,
     provides: PROVIDES,
-    handle?: DataflowHandle<PROPS, PROVIDES, EMITS, INJECTS>,
+    handler?: Dataflowhandler<PROPS, PROVIDES, EMITS, INJECTS>,
     emit?: EmitFunc<EMITS>,
     inject?: InjectFunc<INJECTS>
   ) {
@@ -47,7 +47,7 @@ export class Dataflow<
     this.provides = reactive(provides) as PROVIDES;
     this.emit = emit;
     this.inject = inject;
-    handle && handle(this);
+    handler && handler(this);
   }
   /**
    * このインスタンスのpropsを変更するemit関数を返します。
@@ -70,7 +70,7 @@ export class Dataflow<
   newChild<CHILD_PROPS, CHILD_PROVIDES>(
     props: CHILD_PROPS,
     provides: CHILD_PROVIDES,
-    handle?: DataflowHandle<
+    handler?: Dataflowhandler<
       CHILD_PROPS,
       CHILD_PROVIDES,
       PROPS,
@@ -83,7 +83,7 @@ export class Dataflow<
     return new this.constructor(
       props,
       provides,
-      handle,
+      handler,
       emit || this.getEmitfunc(),
       inject || this.getInjectfunc()
     );
