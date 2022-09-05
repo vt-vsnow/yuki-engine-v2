@@ -79,7 +79,8 @@ export class Dataflow<
     emit?: EmitFunc<PROPS>,
     inject?: InjectFunc<PROVIDES & INJECTS>
   ): Dataflow<CHILD_PROPS, CHILD_PROVIDES, PROPS, PROVIDES & INJECTS> {
-    return new Dataflow(
+    // @ts-ignore
+    return new this.constructor(
       props,
       provides,
       handle,

@@ -1,5 +1,4 @@
 import { Dataflow } from "./Dataflow";
-import type { EmitFunc, InjectFunc, DataflowHandle } from "./Dataflow";
 import { Camera, Object3D, Scene } from "three";
 
 const renderDataflowProps = {
@@ -29,15 +28,10 @@ type RenderDataflowProvides = ReturnType<typeof newRenderDataflowProvides>;
 export type ToplevelRenderDataflow<PROPS, PROVIDES> = Dataflow<
   RenderDataflowProps & PROPS,
   RenderDataflowProvides & PROVIDES,
-  {},
-  {}
+  any,
+  any
 >;
-export type RenderDataflow<PROPS, PROVIDES, EMITS, INJECTS> = Dataflow<
-  RenderDataflowProps & PROPS,
-  RenderDataflowProvides & PROVIDES,
-  EMITS,
-  INJECTS
->;
+
 const objectReduce = (
   o: { [key: string]: number },
   fn: (val, key) => number
@@ -48,15 +42,13 @@ const objectReduce = (
   }
   return sum;
 };
-const handle = <PROPS, PROVIDES>(
-  self:
-    | ToplevelRenderDataflow<PROPS, PROVIDES>
-    | Dataflow<
-        RenderDataflowProps & PROPS,
-        RenderDataflowProvides & PROVIDES,
-        RenderDataflowProps & PROPS,
-        RenderDataflowProvides & PROVIDES
-      >
+const renderDataflowHandle = <PROPS, PROVIDES>(
+  self: Dataflow<
+    RenderDataflowProps & PROPS,
+    RenderDataflowProvides & PROVIDES,
+    any,
+    any
+  >
 ) => {
   // updateLoading
   watchEffect(
@@ -214,44 +206,44 @@ const handle = <PROPS, PROVIDES>(
   );
 };
 
+class RenderDataflowLocal<PROPS, PROVIDES> extends Dataflow<
+  RenderDataflowProps & PROPS,
+  RenderDataflowProvides & PROVIDES,
+  RenderDataflowProps & PROPS,
+  RenderDataflowProvides & PROVIDES
+> {
+  constructor(props: PROPS, provides: PROVIDES, _handle?, emit?, inject?) {
+    super(
+      { ...renderDataflowProps, ...props },
+      // @ts-ignore
+      provides,
+      renderDataflowHandle,
+      emit,
+      inject
+    );
+  }
+  // @ts-ignore
+  override newChild<CHILD_PROPS, CHILD_PROVIDES>(
+    props: CHILD_PROPS,
+    provides: CHILD_PROVIDES
+  ) {
+    return super.newChild(
+      { ...renderDataflowProps, ...props },
+      provides,
+      // @ts-ignore
+      renderDataflowHandle
+    );
+  }
+}
+
 export const useRenderDataflow = <PROPS, PROVIDES>(
   props: PROPS,
   provides: PROVIDES
 ) => {
-  type COMBINED_PROPS = RenderDataflowProps & PROPS;
-  type COMBINED_PROVIDES = RenderDataflowProvides & PROVIDES;
-  type COMBINED_EMITS = {};
-  type COMBINED_INJECTS = {};
-  const ret = new Dataflow<
-    COMBINED_PROPS,
-    COMBINED_PROVIDES,
-    COMBINED_EMITS,
-    COMBINED_INJECTS
-  >(
-    { ...props, ...renderDataflowProps },
-    { ...provides, ...newRenderDataflowProvides() },
-    handle
-  );
-  ret.newChild = <CHILD_PROPS, CHILD_PROVIDES>(
-    props: CHILD_PROPS,
-    provides: CHILD_PROVIDES,
-    handle?: DataflowHandle<
-      CHILD_PROPS,
-      CHILD_PROVIDES,
-      COMBINED_PROPS,
-      COMBINED_PROVIDES & COMBINED_INJECTS
-    >,
-    emit?: EmitFunc<COMBINED_PROPS>,
-    inject?: InjectFunc<COMBINED_PROVIDES>
-  ) => {
-    return Dataflow.prototype.newChild.call(
-      ret,
-      { ...props, ...renderDataflowProps },
-      provides,
-      handle,
-      emit,
-      inject
-    );
-  };
-  return ret;
+  return new RenderDataflowLocal(props, {
+    ...newRenderDataflowProvides(),
+    ...provides,
+  });
 };
+
+export { RenderDataflowLocal as RenderDataflow };

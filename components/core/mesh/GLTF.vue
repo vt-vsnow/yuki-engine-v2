@@ -3,7 +3,7 @@ CoreObject3D(v-if="object3d", v-bind="props", :object3d="object3d")
 </template>
 
 <script setup lang="ts">
-import type { Mesh, Object3D } from "three";
+import { Light, Mesh, Object3D } from "three";
 import { useResource } from "~~/composables/core";
 import type { RenderDataflow } from "~~/composables/RenderDataflow";
 
@@ -30,13 +30,13 @@ const object3d = ref<Object3D>();
 let resourceRef;
 /* start render flow */
 // get flow
-let flow: RenderDataflow<{}, {}, {}, {}>;
+let flow = inject<RenderDataflow<{}, {}>>("flow0", null);
 let nestCount = 0;
 for (var i = 0; flow; i++) {
-  flow = inject<RenderDataflow<{}, {}, {}, {}>>("flow" + i, null);
+  flow = inject<RenderDataflow<{}, {}>>("flow" + i, null);
   flow && (nestCount = i);
 }
-flow = inject<RenderDataflow<{}, {}, {}, {}>>("flow" + nestCount, null);
+flow = inject<RenderDataflow<{}, {}>>("flow" + nestCount, null);
 // new child flow
 const childFlow = flow.newChild({}, {});
 
@@ -62,6 +62,11 @@ watchEffect(async () => {
         if (object.type === "Mesh") {
           (object as Mesh).castShadow = true;
           (object as Mesh).receiveShadow = true;
+        } else if (object instanceof Light) {
+          (object as Light).castShadow = true;
+          // (object as Light).shadow.bias = -0.0005;
+          (object as Light).shadow.camera.matrixAutoUpdate = true;
+          (object as Light).shadow.mapSize.set(2048, 2048);
         }
       });
     }
@@ -84,7 +89,6 @@ watchEffect(() => {
 onUnmounted(() => {
   if (resourceRef) {
     for (const object of resourceRef) {
-      console.log(object.name);
       object.dispose();
     }
   }

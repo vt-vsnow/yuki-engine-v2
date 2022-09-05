@@ -32,15 +32,13 @@ const props = withDefaults(
 );
 /* start render flow */
 // get flow
-let flow: RenderDataflow<{}, {}, {}, {}> = inject<
-  RenderDataflow<{}, {}, {}, {}>
->("flow0", null);
+let flow = inject<RenderDataflow<{}, {}>>("flow0", null);
 let nestCount = 0;
 for (var i = 0; flow; i++) {
-  flow = inject<RenderDataflow<{}, {}, {}, {}>>("flow" + i, null);
+  flow = inject<RenderDataflow<{}, {}>>("flow" + i, null);
   flow && (nestCount = i);
 }
-flow = inject<RenderDataflow<{}, {}, {}, {}>>("flow" + nestCount, null);
+flow = inject<RenderDataflow<{}, {}>>("flow" + nestCount, null);
 // new child flow
 const childFlow = flow.newChild({}, {});
 // provide child flow
@@ -79,17 +77,13 @@ childFlow.inject("object3d").add(wrapper);
 onUnmounted(() => {
   childFlow.inject("object3d").remove(wrapper);
 });
-watch(
-  props,
-  () => {
-    wrapper.position.set(props.dx, props.dy, props.dz);
-    wrapper.rotation.set(props.rx, props.ry, props.rz, props.rotOrder);
-    wrapper.scale.set(props.sx, props.sy, props.sz);
-    wrapper.traverse((object) => {
-      object.updateMatrix();
-    });
-    wrapper.updateMatrix();
-  },
-  { immediate: true }
-);
+watchEffect(() => {
+  wrapper.position.set(props.dx, props.dy, props.dz);
+  wrapper.rotation.set(props.rx, props.ry, props.rz, props.rotOrder);
+  wrapper.scale.set(props.sx, props.sy, props.sz);
+  wrapper.traverse((object) => {
+    object.updateMatrix();
+  });
+  wrapper.updateMatrix();
+});
 </script>
