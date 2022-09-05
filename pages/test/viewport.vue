@@ -4,7 +4,8 @@ div
     template(#2d="{ flow }")
       span(style="color: white") {{ flow.props.loading }},{{ flow.props.suspending }}/{{ flow.props.count }}
     template(#3d="{}")
-      CoreMeshGLTF(:path="path")
+      CoreGroup
+        CoreMeshGLTF(:path="path")
 </template>
 
 <script setup lang="ts">

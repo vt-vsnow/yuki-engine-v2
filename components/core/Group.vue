@@ -1,8 +1,9 @@
 <template lang="pug">
-CoreObject3D(v-bind="props", :object3d="o.mesh")
+slot
 </template>
+
 <script setup lang="ts">
-import { BoxBufferGeometry, Material, Mesh, MeshNormalMaterial } from "three";
+import { Object3D } from "three";
 import type { RenderDataflow } from "~~/composables/RenderDataflow";
 const props = withDefaults(
   defineProps<{
@@ -30,23 +31,11 @@ const props = withDefaults(
     rotOrder: "XYZ",
   }
 );
-const o = useGLObjects() as {
-  mesh: Mesh;
-  geometry: BoxBufferGeometry;
-  material: Material;
-};
-o.material = new MeshNormalMaterial();
-o.geometry = new BoxBufferGeometry(1, 1, 1);
-o.mesh = new Mesh(o.geometry, o.material);
-onUnmounted(() => {
-  finalizeGLObjects(o);
-});
+
+const wrapper = new Object3D();
 /* start render flow */
 // get flow
-let flow: RenderDataflow<{}, {}> = inject<RenderDataflow<{}, {}>>(
-  "flow0",
-  null
-);
+let flow = inject<RenderDataflow<{}, {}>>("flow0", null);
 let nestCount = 0;
 for (var i = 0; flow; i++) {
   flow = inject<RenderDataflow<{}, {}>>("flow" + i, null);
@@ -54,7 +43,8 @@ for (var i = 0; flow; i++) {
 }
 flow = inject<RenderDataflow<{}, {}>>("flow" + nestCount, null);
 // new child flow
-const childFlow = flow.newChild({}, {});
+
+const childFlow = flow.newChild({}, { object3d: wrapper });
 // provide child flow
 provide("flow" + (nestCount + 1), childFlow);
 // get random id
@@ -85,4 +75,17 @@ watchEffect(() => {
   }
 });
 /* end render flow */
+childFlow.inject("object3d").add(wrapper);
+onUnmounted(() => {
+  childFlow.inject("object3d").remove(wrapper);
+});
+watchEffect(() => {
+  wrapper.position.set(props.dx, props.dy, props.dz);
+  wrapper.rotation.set(props.rx, props.ry, props.rz, props.rotOrder);
+  wrapper.scale.set(props.sx, props.sy, props.sz);
+  wrapper.traverse((object) => {
+    object.updateMatrix();
+  });
+  wrapper.updateMatrix();
+});
 </script>

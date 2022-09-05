@@ -30,7 +30,7 @@ const object3d = ref<Object3D>();
 let resourceRef;
 /* start render flow */
 // get flow
-let flow: RenderDataflow<{}, {}>;
+let flow = inject<RenderDataflow<{}, {}>>("flow0", null);
 let nestCount = 0;
 for (var i = 0; flow; i++) {
   flow = inject<RenderDataflow<{}, {}>>("flow" + i, null);
@@ -64,8 +64,9 @@ watchEffect(async () => {
           (object as Mesh).receiveShadow = true;
         } else if (object instanceof Light) {
           (object as Light).castShadow = true;
-          (object as Light).shadow.bias = -0.001;
+          // (object as Light).shadow.bias = -0.0005;
           (object as Light).shadow.camera.matrixAutoUpdate = true;
+          (object as Light).shadow.mapSize.set(2048, 2048);
         }
       });
     }
@@ -88,7 +89,6 @@ watchEffect(() => {
 onUnmounted(() => {
   if (resourceRef) {
     for (const object of resourceRef) {
-      console.log(object.name);
       object.dispose();
     }
   }

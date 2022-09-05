@@ -216,7 +216,7 @@ class RenderDataflowLocal<PROPS, PROVIDES> extends Dataflow<
     super(
       { ...renderDataflowProps, ...props },
       // @ts-ignore
-      provides as ReturnType<typeof newRenderDataflowProvides>,
+      provides,
       renderDataflowHandle,
       emit,
       inject
