@@ -33,12 +33,12 @@ export type ToplevelRenderDataflow<PROPS, PROVIDES> = Dataflow<
 >;
 
 const objectReduce = (
-  o: { [key: string]: number },
-  fn: (val, key) => number
+  o: { [key: string | number]: number },
+  fn: (val: number, key: string | number) => number
 ) => {
   let sum = 0;
   for (const key in o) {
-    sum += fn(o[key], key);
+    sum += fn(o[key] || 0, key);
   }
   return sum;
 };
@@ -177,7 +177,7 @@ const renderDataflowhandler = <PROPS, PROVIDES>(
   watchEffect(
     () => {
       self.props.loading = objectReduce(self.props.loadings, (val, key) =>
-        val === -1 ? self.props.counts[key] : val
+        val === -1 ? self.props.counts[key] || 0 : val
       );
     },
     { flush: "sync" }
@@ -185,7 +185,7 @@ const renderDataflowhandler = <PROPS, PROVIDES>(
   watchEffect(
     () => {
       self.props.suspending = objectReduce(self.props.suspendings, (val, key) =>
-        val === -1 ? self.props.counts[key] : val
+        val === -1 ? self.props.counts[key] || 0 : val
       );
     },
     { flush: "sync" }
@@ -206,13 +206,22 @@ const renderDataflowhandler = <PROPS, PROVIDES>(
   );
 };
 
-class RenderDataflowLocal<PROPS, PROVIDES> extends Dataflow<
+class RenderDataflowLocal<
+  PROPS extends {},
+  PROVIDES extends {}
+> extends Dataflow<
   RenderDataflowProps & PROPS,
   RenderDataflowProvides & PROVIDES,
   RenderDataflowProps & PROPS,
   RenderDataflowProvides & PROVIDES
 > {
-  constructor(props: PROPS, provides: PROVIDES, _handler?, emit?, inject?) {
+  constructor(
+    props: PROPS,
+    provides: PROVIDES,
+    _handler?: any,
+    emit?: any,
+    inject?: any
+  ) {
     super(
       { ...renderDataflowProps, ...props },
       // @ts-ignore
@@ -223,7 +232,7 @@ class RenderDataflowLocal<PROPS, PROVIDES> extends Dataflow<
     );
   }
   // @ts-ignore
-  override newChild<CHILD_PROPS, CHILD_PROVIDES>(
+  override newChild<CHILD_PROPS, CHILD_PROVIDES extends {}>(
     props: CHILD_PROPS,
     provides: CHILD_PROVIDES
   ) {
@@ -236,7 +245,7 @@ class RenderDataflowLocal<PROPS, PROVIDES> extends Dataflow<
   }
 }
 
-export const useRenderDataflow = <PROPS, PROVIDES>(
+export const useRenderDataflow = <PROPS extends {}, PROVIDES>(
   props: PROPS,
   provides: PROVIDES
 ) => {

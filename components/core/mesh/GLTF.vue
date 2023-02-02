@@ -4,8 +4,6 @@ CoreObject3D(v-if="object3d", v-bind="props", :object3d="object3d")
 
 <script setup lang="ts">
 import { Light, Mesh, Object3D } from "three";
-import { useResource } from "~~/composables/core";
-import type { RenderDataflow } from "~~/composables/RenderDataflow";
 
 const props = withDefaults(
   defineProps<{

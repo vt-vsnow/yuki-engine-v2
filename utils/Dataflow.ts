@@ -4,9 +4,12 @@ export type EmitFunc<EMITS> = {
 export type InjectFunc<INJECTS> = {
   <T extends keyof INJECTS>(e: T): INJECTS[T];
 };
-export type Dataflowhandler<PROPS, PROVIDES, EMITS, INJECTS> = (
-  flow: Dataflow<PROPS, PROVIDES, EMITS, INJECTS>
-) => void;
+export type Dataflowhandler<
+  PROPS extends {},
+  PROVIDES extends {},
+  EMITS extends {},
+  INJECTS extends {}
+> = (flow: Dataflow<PROPS, PROVIDES, EMITS, INJECTS>) => void;
 
 /**
  * 上下方向へのデータのフローを提供します。
@@ -28,11 +31,11 @@ export class Dataflow<
   /**
    * 上のフローへのEmit
    */
-  public readonly emit: EmitFunc<EMITS>;
+  public readonly emit: EmitFunc<EMITS> | undefined;
   /**
    * 上のフローからのInject
    */
-  public readonly inject: InjectFunc<INJECTS>;
+  public readonly inject: InjectFunc<INJECTS> | undefined;
   /**
    * props,providesと、handler,emit,inject関数(optional)からインスタンスを初期化します。
    */
@@ -67,7 +70,7 @@ export class Dataflow<
   /**
    * 新しい子フローを作成して返します。
    */
-  newChild<CHILD_PROPS, CHILD_PROVIDES>(
+  newChild<CHILD_PROPS extends {}, CHILD_PROVIDES extends {}>(
     props: CHILD_PROPS,
     provides: CHILD_PROVIDES,
     handler?: Dataflowhandler<

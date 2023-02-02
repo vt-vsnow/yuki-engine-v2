@@ -13,7 +13,7 @@ import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
 import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass";
 import { FXAAShader } from "three/examples/jsm/shaders/FXAAShader";
-defineProps<{ flow: ReturnType<typeof useRenderDataflow> }>();
+defineProps<{ flow: ReturnType<typeof useRenderDataflow> | undefined }>();
 const emit = defineEmits<{
   (e: "update:flow", val: ReturnType<typeof useRenderDataflow>): void;
 }>();
@@ -30,10 +30,12 @@ const fxaaPass = new ShaderPass(FXAAShader);
 composer.addPass(renderPass);
 composer.addPass(fxaaPass);
 const pixelRatio = renderer.getPixelRatio();
-fxaaPass.material.uniforms["resolution"].value.x =
-  1 / (renderer.domElement.offsetWidth * pixelRatio);
-fxaaPass.material.uniforms["resolution"].value.y =
-  1 / (renderer.domElement.offsetHeight * pixelRatio);
+if (fxaaPass.material.uniforms["resolution"]) {
+  fxaaPass.material.uniforms["resolution"].value.x =
+    1 / (renderer.domElement.offsetWidth * pixelRatio);
+  fxaaPass.material.uniforms["resolution"].value.y =
+    1 / (renderer.domElement.offsetHeight * pixelRatio);
+}
 let running = true;
 onUnmounted(() => {
   running = false;
@@ -43,7 +45,7 @@ const render = () => {
   flow.props.renderRequired = true;
 };
 render();
-let control;
+let control: OrbitControls;
 flow.provides.camera.matrixAutoUpdate = true;
 watch(
   toRef(flow.props, "renderRequired"),
@@ -69,6 +71,7 @@ watch(
   width: 100vw;
   height: 100vh;
 }
+
 .d-none {
   display: none;
 }

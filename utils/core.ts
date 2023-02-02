@@ -46,16 +46,20 @@ export const useGLObjects = () =>
   new Proxy(
     {},
     {
-      set(obj, prop, val) {
-        if (prop in obj && typeof obj[prop].dispose === "function") {
+      set(obj: { [key: string]: any }, prop, val) {
+        if (
+          prop in obj &&
+          typeof prop === "string" &&
+          typeof obj[prop].dispose === "function"
+        ) {
           obj[prop].dispose();
         }
-        obj[prop] = val;
+        obj[prop as string] = val;
         return true;
       },
       deleteProperty(obj, prop) {
         if (prop in obj) {
-          delete obj[prop];
+          delete obj[prop as string];
         }
         return true;
       },
@@ -73,7 +77,9 @@ export const traverseObject = (
     }
   } else if (typeof object === "object") {
     for (const current in object) {
+      // @ts-ignore
       callback(object[current]);
+      // @ts-ignore
       traverseObject(object[current], callback);
     }
   } else {
@@ -89,7 +95,7 @@ export const finalizeGLObjects = (object: { [key: string]: any }) => {
 };
 
 export const useUpdateExtender = (
-  emit: (e: string, ...args) => unknown,
+  emit: (e: string, ...args: any[]) => unknown,
   names: string[]
 ) => {
   const ret: { [x: string]: (e: string, ...arg: unknown[]) => unknown } = {};
@@ -103,10 +109,11 @@ export const useUpdateExtender = (
 const onResize = () => {
   renderer.setSize(window.innerWidth, window.innerHeight);
 };
-window.addEventListener("load", () => {
-  document.body.appendChild(renderer.domElement);
-  onResize();
-});
+// window.addEventListener("load", () => {
+document.body.appendChild(renderer.domElement);
+// console.log("core was called");
+onResize();
+// });
 window.addEventListener("resize", onResize);
 
 export const useRandomId = () => Math.random().toString(36).substring(2);
@@ -121,13 +128,13 @@ export const useResource = async <T extends "gltf">(path: string, type: T) => {
   if (type === "gltf") {
     // load gltf
     const model = await loader.loadAsync(path);
-    const objects = [];
+    const objects: Object3D[] = [];
     model.scene.traverse((object) => {
       if (object instanceof Mesh) {
         objects.push(object.geometry, object.material);
       }
     });
-    return [model, objects] as [GLTF, { dispose: () => unknown }[]];
+    return [model, objects] as unknown as [GLTF, { dispose: () => unknown }[]];
   }
   return null;
 };
