@@ -2,7 +2,7 @@
 Teleport(:to="flow.provides.element")
   .fullscreen
     slot(name="2d", :flow="flow")
-.d-none
+.d-none Viewport
   slot(name="3d")
 </template>
 
