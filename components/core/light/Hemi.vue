@@ -3,7 +3,6 @@ div LightHemi
   CoreObject3D(v-bind="props", :object3d="light")
 </template>
 <script setup lang="ts">
-/* start render flow */
 
 import { HemisphereLight } from "three";
 import type { RenderDataflow } from "~~/utils/RenderDataflow";
@@ -24,45 +23,44 @@ const props = withDefaults(
   }>(),
   { strength: 1, sky: 0xffffff, ground: 0x000000 }
 );
+/* start render flow */
 // get flow
-let flow: RenderDataflow<{}, {}, {}, {}> = inject<
-  RenderDataflow<{}, {}, {}, {}>
->("flow0", null);
+let flow = inject<RenderDataflow<{}, {}> | null>("flow0", null);
 let nestCount = 0;
 for (var i = 0; flow; i++) {
-  flow = inject<RenderDataflow<{}, {}, {}, {}>>("flow" + i, null);
+  flow = inject<RenderDataflow<{}, {}> | null>("flow" + i, null);
   flow && (nestCount = i);
 }
-flow = inject<RenderDataflow<{}, {}, {}, {}>>("flow" + nestCount, null);
+flow = inject<RenderDataflow<{}, {}> | null>("flow" + nestCount, null);
 // new child flow
-const childFlow = flow.newChild({}, {});
+const childFlow = flow?.newChild({}, {});
 // provide child flow
 provide("flow" + (nestCount + 1), childFlow);
 // get random id
 const id = useRandomId();
 // add this to callback
-childFlow.emit("addCallback", [id, 1]);
+childFlow?.emit?.("addCallback", [id, 1]);
 onUnmounted(() => {
   // remove this from callback
-  childFlow.emit("removeCallback", id);
+  childFlow?.emit?.("removeCallback", id);
 });
 
 watchEffect(() => {
-  if (flow.props.loadings[id] === -1) {
+  if (flow?.props.loadings[id] === -1) {
     // on load
-    childFlow.emit("updateLoadings", [id, 0]);
+    childFlow?.emit?.("updateLoadings", [id, 0]);
   }
 });
 watchEffect(() => {
-  if (flow.props.suspendings[id] === -1) {
+  if (flow?.props.suspendings[id] === -1) {
     // on suspend
-    childFlow.emit("updateSuspendings", [id, 0]);
+    childFlow?.emit?.("updateSuspendings", [id, 0]);
   }
 });
 watchEffect(() => {
-  if (flow.props.renderRequireds[id]) {
+  if (flow?.props.renderRequireds[id]) {
     // on draw
-    childFlow.emit("updateRenderRequired", [id, false]);
+    childFlow?.emit?.("updateRenderRequired", [id, false]);
   }
 });
 /* end render flow */
