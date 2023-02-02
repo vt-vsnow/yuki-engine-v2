@@ -2,12 +2,24 @@
 div
   CoreViewport(v-model:flow="flow")
     template(#2d="{}")
-      textarea(v-model="translationSet.src" style="width:90%;height:10rem")
+      div {{ translationSet.src }}
       div {{ translationSet.dst }}
 </template>
 
 <script setup lang="ts">
 const flow = ref<ReturnType<typeof useRenderDataflow>>();
 const translationSet = useTranslation()
-translationSet.src = "翻訳する文章を入力"
+// @ts-ignore
+const recognition = new (webkitSpeechRecognition || SpeechRecognition)();
+recognition.interimResults = true;
+
+recognition.onresult = (event: any) => {
+  translationSet.src = event.results[event.results.length - 1][0].transcript;
+  console.log(event.results[event.results.length - 1].isFinal ? "speaking finished" : "speaking");
+}
+recognition.onend = () => {
+  console.log("ended")
+  recognition.start()
+}
+recognition.start()
 </script>
