@@ -3,7 +3,6 @@ div LightPoint
   CoreObject3D(v-bind="props", :object3d="light")
 </template>
 <script setup lang="ts">
-
 import { PointLight } from "three";
 import type { RenderDataflow } from "~~/utils/RenderDataflow";
 const props = withDefaults(
