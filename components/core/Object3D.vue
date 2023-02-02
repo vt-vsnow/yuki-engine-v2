@@ -1,8 +1,10 @@
-<template lang="pug"></template>
+<template lang="pug">
+div
+</template>
 
 <script setup lang="ts">
 import { Object3D } from "three";
-import type { RenderDataflow } from "~~/composables/RenderDataflow";
+import type { RenderDataflow } from "~~/utils/RenderDataflow";
 const props = withDefaults(
   defineProps<{
     object3d: Object3D;

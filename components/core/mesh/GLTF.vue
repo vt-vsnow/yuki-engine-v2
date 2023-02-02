@@ -1,9 +1,11 @@
 <template lang="pug">
-CoreObject3D(v-if="object3d", v-bind="props", :object3d="object3d")
+div
+  CoreObject3D(v-if="object3d", v-bind="props", :object3d="object3d")
 </template>
 
 <script setup lang="ts">
 import { Light, Mesh, Object3D } from "three";
+import type { RenderDataflow } from "~~/utils/RenderDataflow";
 
 const props = withDefaults(
   defineProps<{

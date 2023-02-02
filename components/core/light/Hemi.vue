@@ -1,11 +1,12 @@
 <template lang="pug">
-CoreObject3D(v-bind="props", :object3d="light")
+div
+  CoreObject3D(v-bind="props", :object3d="light")
 </template>
 <script setup lang="ts">
 /* start render flow */
 
 import { HemisphereLight } from "three";
-import type { RenderDataflow } from "~~/composables/RenderDataflow";
+import type { RenderDataflow } from "~~/utils/RenderDataflow";
 const props = withDefaults(
   defineProps<{
     dx?: number;
