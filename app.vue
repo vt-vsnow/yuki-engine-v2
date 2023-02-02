@@ -8,7 +8,7 @@ div
   margin: 0;
 }
 
-body>canvas {
+body > canvas {
   position: absolute;
 }
 </style>
