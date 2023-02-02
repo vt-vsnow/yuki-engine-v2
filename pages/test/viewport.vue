@@ -9,8 +9,9 @@ div
 
 <script setup lang="ts">
 import { Clock } from "three";
+import roomModelPath from "/assets/部屋.glb?url";
 
-const path: string = (await import("/assets/部屋.glb?url")).default;
+const path = roomModelPath;
 const flow = ref<ReturnType<typeof useRenderDataflow>>();
 const clock = new Clock();
 const rx = ref(0);
