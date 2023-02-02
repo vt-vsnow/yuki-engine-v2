@@ -1,5 +1,5 @@
 <template lang="pug">
-div
+div MeshCube
   CoreObject3D(v-bind="props", :object3d="o.mesh")
 </template>
 <script setup lang="ts">

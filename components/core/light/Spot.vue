@@ -1,5 +1,5 @@
 <template lang="pug">
-div
+div LightSpot
   CoreObject3D(v-bind="props", :object3d="light")
 </template>
 <script setup lang="ts">

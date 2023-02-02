@@ -1,5 +1,5 @@
 <template lang="pug">
-div
+div Object3D
 </template>
 
 <script setup lang="ts">

@@ -1,5 +1,5 @@
 <template lang="pug">
-div
+div MeshGLTF
   CoreObject3D(v-if="object3d", v-bind="props", :object3d="object3d")
 </template>
 
