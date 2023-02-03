@@ -14,13 +14,22 @@ const emit = defineEmits<{
 const flow = useRenderDataflow({}, {});
 emit("update:flow", flow);
 provide("flow0", flow);
+
+const windowHeight = ref(window.innerHeight + "px");
+const onResize = () => {
+  windowHeight.value = window.innerHeight + "px"
+}
+window.addEventListener("resize", onResize)
+onUnmounted(() => {
+  window.removeEventListener("resize", onResize)
+})
 </script>
 
 <style scoped lang="scss">
 .fullscreen {
   position: absolute;
   width: 100vw;
-  height: 100vh;
+  height: v-bind("windowHeight");
 }
 
 .d-none {
