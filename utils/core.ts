@@ -37,6 +37,7 @@ export const useDefaultCamera = () => {
     100
   );
   ret.position.set(2, 2, 2);
+  ret.matrixAutoUpdate = true;
   ret.lookAt(0, 0, 0);
   setAutomaticCameraRatio(ret);
   return ret;
