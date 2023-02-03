@@ -8,8 +8,7 @@ import {
 import { GLTF, GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader";
 const renderer = new WebGLRenderer();
-renderer.setClearAlpha(1);
-renderer.setClearColor(0x000000);
+renderer.setClearColor(0xffffff, 0);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = PCFSoftShadowMap;
 renderer.physicallyCorrectLights = true;
