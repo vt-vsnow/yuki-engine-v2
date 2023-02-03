@@ -7,11 +7,13 @@ div
         button(v-else @click="endAr") Disable ar 
       template(v-else) AR is not supported
     template(#3d="{}")
-      CoreMeshCube
+      CoreMeshGLTF(v-bind="{ path:roomModelPath }")
+      CoreLightHemi
 </template>
 
 <script setup lang="ts">
 import type { WebGLRenderer } from 'three';
+import roomModelPath from "/assets/部屋.glb?url";
 
 
 const isArSupported = navigator.xr && await navigator.xr.isSessionSupported('immersive-ar');
@@ -28,6 +30,7 @@ const isArRunning = ref(false)
 // }
 let xrWebGLLayer: XRWebGLLayer;
 const startAr = async () => {
+
   xrSession = await navigator.xr!.requestSession('immersive-ar');
   referenceSpace = await xrSession.requestReferenceSpace('local');
   console.log("ar started")
@@ -41,6 +44,7 @@ const startAr = async () => {
     console.log("ar ended")
   }
   xrSession.requestAnimationFrame(render);
+  // flow.value!.provides.renderer.domElement.requestFullscreen()
 }
 
 const endAr = () => {
@@ -64,8 +68,8 @@ let xrFrame: XRFrame;
 let render: (timeStamp: number, xrFrame: XRFrame) => void;
 const onRenderFlowInjected = (flow: ReturnType<typeof useRenderDataflow>) => {
   // 初期化処理
-  renderer = toRaw(flow.provides.renderer);
 
+  renderer = toRaw(flow.provides.renderer);
   render = (timeStampL: number, xrFrameL: XRFrame) => {
     running && xrSession.requestAnimationFrame(render);
     timeStamp = timeStampL;
@@ -84,23 +88,33 @@ const onRenderFlowInjected = (flow: ReturnType<typeof useRenderDataflow>) => {
         if (pose) {
           const gl = renderer.getContext()
           gl.bindFramebuffer(gl.FRAMEBUFFER, xrWebGLLayer.framebuffer);
+
           pose.views.forEach((view) => {
+            let viewport = xrWebGLLayer.getViewport(view);
+            gl.viewport(viewport!.x, viewport!.y, viewport!.width, viewport!.height);
             const pm = view.projectionMatrix;
-            flow.provides.camera.projectionMatrix.set(pm[0]!, pm[1]!, pm[2]!, pm[3]!,
-              pm[4]!, pm[5]!, pm[6]!, pm[7]!,
-              pm[8]!, pm[9]!, pm[10]!, pm[11]!,
-              pm[12]!, pm[13]!, pm[14]!, pm[15]!)
-            const tm = view.transform.matrix;
-            flow.provides.camera.matrix.set(tm[0]!, tm[1]!, tm[2]!, tm[3]!,
-              tm[4]!, tm[5]!, tm[6]!, tm[7]!,
-              tm[8]!, tm[9]!, tm[10]!, tm[11]!,
-              tm[12]!, tm[13]!, tm[14]!, tm[15]!)
+            flow.provides.camera.projectionMatrix.fromArray(pm)
+            // const tm = view.transform.matrix;
+            // flow.provides.camera.matrix.fromArray(tm)
+            flow.provides.camera.position.set(view.transform.position.x, view.transform.position.y, view.transform.position.z)
+            flow.provides.camera.quaternion.set(view.transform.orientation.x, view.transform.orientation.y, view.transform.orientation.z, view.transform.orientation.w)
+            // flow.provides.camera.updateMatrixWorld(true);
+            // const viewport = xrWebGLLayer.getViewport(view);
+            // renderer.setSize(viewport!.width, viewport!.height);
+            renderer.clearColor();
+            renderer.render(toRaw(flow.provides.object3d),
+              flow.provides.camera)
+            // console.log(view.transform.position.x,
+            //   view.transform.position.y,
+            //   view.transform.position.z,)
           })
-          renderer.render(toRaw(flow.provides.object3d),
-            flow.provides.camera)
         } else {
+          renderer.clear(true, true);
           console.log("位置認識不可")
         }
+        // console.log(toRaw(flow.provides.camera))
+        // renderer.render(toRaw(flow.provides.object3d),
+        //   flow.provides.camera)
       } else {
         // レンダリング直後
         // console.log("after render")
@@ -108,5 +122,6 @@ const onRenderFlowInjected = (flow: ReturnType<typeof useRenderDataflow>) => {
     },
     { flush: "sync" }
   );
+  // flow.props.renderRequired = true;
 }
 </script>
