@@ -1,5 +1,6 @@
 import { Dataflow } from "./Dataflow";
 import { Camera, Object3D, Scene } from "three";
+import type { Intersection } from "three";
 
 const renderDataflowProps = {
   loading: 0,
@@ -22,6 +23,10 @@ const newRenderDataflowProvides = () => ({
   camera: useDefaultCamera() as Camera,
   element: document.body,
   object3d: new Scene() as Object3D,
+  clickables: [] as {
+    object: Object3D;
+    callback: (event: Intersection, top: boolean) => unknown;
+  }[],
 });
 type RenderDataflowProps = typeof renderDataflowProps;
 type RenderDataflowProvides = ReturnType<typeof newRenderDataflowProvides>;

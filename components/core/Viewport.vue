@@ -30,6 +30,11 @@ onUnmounted(() => {
   position: absolute;
   width: 100vw;
   height: v-bind("windowHeight");
+  pointer-events: none;
+}
+
+.fullscreen * {
+  pointer-events: all;
 }
 
 .d-none {

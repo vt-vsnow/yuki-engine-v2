@@ -6,6 +6,7 @@ div Group
 <script setup lang="ts">
 import { Object3D } from "three";
 import type { RenderDataflow } from "~~/utils/RenderDataflow";
+import type { Intersection } from "three"
 const props = withDefaults(
   defineProps<{
     dx?: number;
@@ -18,6 +19,7 @@ const props = withDefaults(
     sy?: number;
     sz?: number;
     rotOrder?: string;
+    onClickListener?: (event: Intersection, top: boolean) => unknown
   }>(),
   {
     dx: 0,

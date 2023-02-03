@@ -4,6 +4,7 @@ div MeshCube
 </template>
 <script setup lang="ts">
 import { BoxBufferGeometry, Material, Mesh, MeshStandardMaterial } from "three";
+import type { Intersection } from "three"
 import type { RenderDataflow } from "~~/utils/RenderDataflow";
 const props = withDefaults(
   defineProps<{
@@ -17,6 +18,7 @@ const props = withDefaults(
     sy?: number;
     sz?: number;
     rotOrder?: string;
+    onClickListener?: (event: Intersection, top: boolean) => unknown
   }>(),
   {
     dx: 0,

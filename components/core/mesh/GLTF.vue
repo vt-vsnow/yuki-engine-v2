@@ -6,7 +6,7 @@ div MeshGLTF
 <script setup lang="ts">
 import { Light, Mesh, Object3D } from "three";
 import type { RenderDataflow } from "~~/utils/RenderDataflow";
-
+import type { Intersection } from "three"
 const props = withDefaults(
   defineProps<{
     path: string;
@@ -20,6 +20,7 @@ const props = withDefaults(
     sx?: number;
     sy?: number;
     sz?: number;
+    onClickListener?: (event: Intersection, top: boolean) => unknown
   }>(),
   {
     shadow: true,

@@ -4,6 +4,7 @@ div Object3D
 
 <script setup lang="ts">
 import { Object3D } from "three";
+import type { Intersection } from "three"
 import type { RenderDataflow } from "~~/utils/RenderDataflow";
 const props = withDefaults(
   defineProps<{
@@ -18,6 +19,7 @@ const props = withDefaults(
     sy?: number;
     sz?: number;
     rotOrder?: string;
+    onClickListener?: (event: Intersection, top: boolean) => unknown
   }>(),
   {
     dx: 0,
@@ -72,6 +74,18 @@ watchEffect(() => {
     childFlow?.emit?.("updateRenderRequired", [id, false]);
   }
 });
+watch([toRef(props, "onClickListener"), toRef(props, "object3d")], (newVal, oldVal) => {
+  const clickables = flow?.inject!("clickables")!
+  // console.log(newVal, oldVal)
+  if (newVal[0]) {
+    clickables.push({ object: newVal[1], callback: newVal[0] })
+  }
+  const filtered = clickables.filter((object) => !(object.object === oldVal[1] && object.callback === oldVal[0]))
+  clickables.length = 0;
+  filtered.forEach((val) => {
+    clickables.push(val)
+  })
+}, { immediate: true })
 /* end render flow */
 const wrapper = new Object3D();
 wrapper.add(toRaw(props.object3d));
