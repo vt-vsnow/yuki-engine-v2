@@ -1,10 +1,14 @@
 import {
+  Camera,
   Mesh,
   Object3D,
   PCFSoftShadowMap,
   PerspectiveCamera,
+  Raycaster,
+  Vector2,
   WebGLRenderer,
 } from "three";
+import type { Intersection } from "three";
 import { GLTF, GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader";
 const renderer = new WebGLRenderer();
@@ -137,4 +141,64 @@ export const useResource = async <T extends "gltf">(path: string, type: T) => {
     return [model, objects] as unknown as [GLTF, { dispose: () => unknown }[]];
   }
   return null;
+};
+interface Clickable {
+  object: Object3D;
+  callback: (event: Intersection, top: boolean) => unknown;
+}
+
+const rayCaster = new Raycaster();
+const pointer = new Vector2();
+renderer.domElement.addEventListener("click", function (event) {
+  // 参照 https://lab.syncer.jp/Web/JavaScript/Snippet/12/
+  var clickX = event.pageX;
+  var clickY = event.pageY;
+
+  // 要素の位置を取得
+  var clientRect = this.getBoundingClientRect();
+  var positionX = clientRect.left + window.pageXOffset;
+  var positionY = clientRect.top + window.pageYOffset;
+
+  // 要素内におけるクリック位置を計算
+  pointer.x = ((clickX - positionX) / clientRect.width) * 2 - 1;
+  pointer.y = 1 - ((clickY - positionY) / clientRect.height) * 2;
+  // console.log(pointer.x, pointer.y);
+  clickablesList.forEach((clickables) => {
+    const objects: Object3D[] = [];
+    clickables.clickables.forEach((clickable) => {
+      objects.push(clickable.object);
+    });
+    rayCaster.setFromCamera(pointer, clickables.camera);
+    // console.log(objects);
+    const intersects = rayCaster.intersectObjects(objects);
+    const intersectObjects = intersects.map((val) => val.object);
+    intersectObjects.forEach((object, index) => {
+      const indexOfIntersect = objects.indexOf(object);
+      // console.log(indexOfIntersect);
+      if (indexOfIntersect !== -1) {
+        clickables.clickables[indexOfIntersect]?.callback(
+          intersects[indexOfIntersect]!,
+          index === 0
+        );
+      }
+    });
+    // clickables.clickables.forEach((clickable) => {
+    //   const indexOfIntersect = intersectObjects.indexOf(clickable.object);
+    //   if (indexOfIntersect !== -1) {
+    //     clickables.clickables[indexOfIntersect]?.callback(
+    //       intersects[indexOfIntersect]!
+    //     );
+    //   }
+    // });
+  });
+});
+
+let clickablesList: { clickables: Clickable[]; camera: Camera }[] = [];
+export const addClickables = (camera: Camera, clickables: Clickable[]) => {
+  clickablesList.push({ clickables, camera });
+};
+export const removeClickables = (camera: Camera, clickables: Clickable[]) => {
+  clickablesList = clickablesList.filter(
+    (val) => !(val.camera === camera, val.clickables === clickables)
+  );
 };
