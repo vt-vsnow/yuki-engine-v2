@@ -1,6 +1,6 @@
 <template lang="pug">
 div LightDirectional
-  CoreObject3D(v-bind="props", :object3d="light")
+  CoreObject3D(v-bind="{...props,...{dx:0,dy:0,dz:0}}", :object3d="light")
 </template>
 <script setup lang="ts">
 import { DirectionalLight } from "three";
@@ -21,6 +21,9 @@ const props = withDefaults(
     color?: number;
   }>(),
   {
+    dx: 0,
+    dy: 0,
+    dz: 0,
     shadow: true,
     strength: 1,
     color: 0xffffff,
@@ -75,6 +78,7 @@ if (props.shadow) {
   light.shadow.camera.matrixAutoUpdate = true;
 }
 watchEffect(() => {
+  light.position.set(props.dx, props.dy, props.dz)
   light.color.set(props.color);
   light.intensity = props.strength;
 });
