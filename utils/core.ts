@@ -263,6 +263,42 @@ renderer.domElement.addEventListener("wheel", function (event) {
   });
 });
 
+const onDrug = (event: MouseEvent) => {
+  console.log("drug");
+};
+const onDrugFinish = (event: MouseEvent) => {
+  console.log("fin");
+};
+
+let touching = false;
+let moved = false;
+renderer.domElement.addEventListener("pointerdown", () => {
+  touching = true;
+  moved = false;
+});
+renderer.domElement.addEventListener("pointermove", (event) => {
+  moved = true;
+  touching && onDrug(event);
+});
+renderer.domElement.addEventListener("pointerup", (event) => {
+  if (touching && moved) {
+    touching = false;
+    onDrugFinish(event);
+  }
+});
+renderer.domElement.addEventListener("pointercancel", (event) => {
+  if (touching && moved) {
+    touching = false;
+    onDrugFinish(event);
+  }
+});
+renderer.domElement.addEventListener("pointerleave", (event) => {
+  if (touching && moved) {
+    touching = false;
+    onDrugFinish(event);
+  }
+});
+
 let clickablesList: { clickables: Clickable[]; camera: Camera }[] = [];
 export const addClickables = (camera: Camera, clickables: Clickable[]) => {
   clickablesList.push({ clickables, camera });
