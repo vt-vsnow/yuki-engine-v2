@@ -31,7 +31,7 @@ const newRenderDataflowProvides = () => ({
     object: Object3D;
     callback: (event: Intersection, amount: number, top: boolean) => unknown;
   }[],
-  drugables: [] as {
+  draggables: [] as {
     object: Object3D;
     callback: (amount: Vector2, finished: boolean, top: boolean) => unknown;
   }[],

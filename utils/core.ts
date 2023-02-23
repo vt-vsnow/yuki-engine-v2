@@ -150,7 +150,7 @@ interface Scrollable {
   object: Object3D;
   callback: (event: Intersection, amount: number, top: boolean) => unknown;
 }
-interface Drugable {
+interface draggable {
   object: Object3D;
   callback: (amount: Vector2, finished: boolean, top: boolean) => unknown;
 }
@@ -258,10 +258,12 @@ renderer.domElement.addEventListener("wheel", function (event) {
   });
 });
 
-const onDrug = (event: MouseEvent) => {
-  console.log("drug");
+const draggingObjects = [];
+
+const onDrag = (event: MouseEvent) => {
+  console.log("drag");
 };
-const onDrugFinish = (event: MouseEvent) => {
+const onDragFinish = (event: MouseEvent) => {
   console.log("fin");
 };
 
@@ -273,25 +275,25 @@ renderer.domElement.addEventListener("pointerdown", () => {
 });
 renderer.domElement.addEventListener("pointermove", (event) => {
   moved = true;
-  touching && onDrug(event);
+  touching && onDrag(event);
 });
 renderer.domElement.addEventListener("pointerup", (event) => {
   if (touching && moved) {
-    touching = false;
-    onDrugFinish(event);
+    onDragFinish(event);
   }
+  touching = false;
 });
 renderer.domElement.addEventListener("pointercancel", (event) => {
   if (touching && moved) {
-    touching = false;
-    onDrugFinish(event);
+    onDragFinish(event);
   }
+  touching = false;
 });
 renderer.domElement.addEventListener("pointerleave", (event) => {
   if (touching && moved) {
-    touching = false;
-    onDrugFinish(event);
+    onDragFinish(event);
   }
+  touching = false;
 });
 
 let clickablesList: { clickables: Clickable[]; camera: Camera }[] = [];
@@ -315,12 +317,12 @@ export const removeScrollables = (
     (val) => !(val.camera === camera, val.scrollables === scrollables)
   );
 };
-let drugablesList: { drugables: Drugable[]; camera: Camera }[] = [];
-export const addDrugables = (camera: Camera, drugables: Drugable[]) => {
-  drugablesList.push({ drugables, camera });
+let draggablesList: { draggables: draggable[]; camera: Camera }[] = [];
+export const addDraggables = (camera: Camera, draggables: draggable[]) => {
+  draggablesList.push({ draggables, camera });
 };
-export const removeDrugables = (camera: Camera, drugables: Drugable[]) => {
-  drugablesList = drugablesList.filter(
-    (val) => !(val.camera === camera, val.drugables === drugables)
+export const removeDraggables = (camera: Camera, draggables: draggable[]) => {
+  draggablesList = draggablesList.filter(
+    (val) => !(val.camera === camera, val.draggables === draggables)
   );
 };

@@ -3,8 +3,8 @@ div
   CoreViewport(v-model:flow="flow")
     template(#3d="{}")
       CoreGroup
-        CoreMeshCube(:onDrugListener="(_,amount,top)=>top&&log('hello'+amount)")
-        CoreMeshCube(:onDrugListener="(_,amount,top)=>top&&log('world'+amount)" v-bind="{dx:1}")
+        CoreMeshCube(:onDragListener="(amount,_finished,top)=>top&&log('hello'+amount.x+','+amount.y)")
+        CoreMeshCube(:onDragListener="(amount,_finished,top)=>top&&log('world'+amount.x+','+amount.y)" v-bind="{dx:1}")
         CoreMeshCube(v-bind="{dz:-1}")
         CoreLightPoint(:strength="30" v-bind="{dx:3,dy:2,dz:2}")
 </template>
@@ -29,11 +29,11 @@ const unsub = watch(flow, () => {
   }
 });
 onUnmounted(() => {
-  removeDrugables(flow.value!.provides.camera, flow.value!.provides.drugables)
+  removeDraggables(flow.value!.provides.camera, flow.value!.provides.draggables)
 })
 const onRenderFlowInjected = (flow: ReturnType<typeof useRenderDataflow>) => {
   // console.log(JSON.stringify(flow.provides.clickables))
-  addDrugables(flow.provides.camera, flow.provides.drugables)
+  addDraggables(flow.provides.camera, flow.provides.draggables)
 
   const render = () => {
     running && requestAnimationFrame(render)

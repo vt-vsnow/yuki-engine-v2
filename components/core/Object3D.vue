@@ -21,7 +21,7 @@ const props = withDefaults(
     rotOrder?: string;
     onClickListener?: (event: Intersection, top: boolean) => unknown
     onScrollListener?: (event: Intersection, amount: number, top: boolean) => unknown
-    onDrugListener?: (amount: Vector2, finished: boolean, top: boolean) => unknown
+    onDragListener?: (amount: Vector2, finished: boolean, top: boolean) => unknown
   }>(),
   {
     dx: 0,
