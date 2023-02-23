@@ -152,12 +152,7 @@ interface Scrollable {
 }
 interface Drugable {
   object: Object3D;
-  callback: (
-    event: Intersection,
-    amount: Vector2,
-    finished: boolean,
-    top: boolean
-  ) => unknown;
+  callback: (amount: Vector2, finished: boolean, top: boolean) => unknown;
 }
 
 const rayCaster = new Raycaster();

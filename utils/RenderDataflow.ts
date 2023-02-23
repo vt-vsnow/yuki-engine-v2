@@ -33,12 +33,7 @@ const newRenderDataflowProvides = () => ({
   }[],
   drugables: [] as {
     object: Object3D;
-    callback: (
-      event: Intersection,
-      amount: Vector2,
-      finished: boolean,
-      top: boolean
-    ) => unknown;
+    callback: (amount: Vector2, finished: boolean, top: boolean) => unknown;
   }[],
 });
 type RenderDataflowProps = typeof renderDataflowProps;
