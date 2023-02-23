@@ -10,6 +10,7 @@ div
 </template>
 
 <script setup lang="ts">
+
 function log(text: string) {
   console.log(text)
 }
@@ -28,7 +29,7 @@ const unsub = watch(flow, () => {
   }
 });
 onUnmounted(() => {
-  removeClickables(flow.value!.provides.camera, flow.value!.provides.clickables)
+  removeScrollables(flow.value!.provides.camera, flow.value!.provides.scrollables)
 })
 const onRenderFlowInjected = (flow: ReturnType<typeof useRenderDataflow>) => {
   // console.log(JSON.stringify(flow.provides.clickables))

@@ -150,6 +150,15 @@ interface Scrollable {
   object: Object3D;
   callback: (event: Intersection, amount: number, top: boolean) => unknown;
 }
+interface Drugable {
+  object: Object3D;
+  callback: (
+    event: Intersection,
+    amount: Vector2,
+    finished: boolean,
+    top: boolean
+  ) => unknown;
+}
 
 const rayCaster = new Raycaster();
 const pointer = new Vector2();
@@ -273,5 +282,14 @@ export const removeScrollables = (
 ) => {
   scrollablesList = scrollablesList.filter(
     (val) => !(val.camera === camera, val.scrollables === scrollables)
+  );
+};
+let drugablesList: { drugables: Drugable[]; camera: Camera }[] = [];
+export const addDrugables = (camera: Camera, drugables: Drugable[]) => {
+  drugablesList.push({ drugables, camera });
+};
+export const removeDrugables = (camera: Camera, drugables: Drugable[]) => {
+  drugablesList = drugablesList.filter(
+    (val) => !(val.camera === camera, val.drugables === drugables)
   );
 };
