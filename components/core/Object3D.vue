@@ -101,6 +101,18 @@ watch([toRef(props, "onScrollListener"), toRef(props, "object3d")], (newVal, old
     scrollables.push(val)
   })
 }, { immediate: true })
+watch([toRef(props, "onDragListener"), toRef(props, "object3d")], (newVal, oldVal) => {
+  const draggables = flow?.inject!("draggables")!
+  // console.log(newVal, oldVal)
+  if (newVal[0]) {
+    draggables.push({ object: newVal[1], callback: newVal[0] })
+  }
+  const filtered = draggables.filter((object) => !(object.object === oldVal[1] && object.callback === oldVal[0]))
+  draggables.length = 0;
+  filtered.forEach((val) => {
+    draggables.push(val)
+  })
+}, { immediate: true })
 const wrapper = new Object3D();
 wrapper.add(toRaw(props.object3d));
 childFlow?.inject?.("object3d").add(wrapper);

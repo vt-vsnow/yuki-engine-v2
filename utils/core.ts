@@ -258,20 +258,80 @@ renderer.domElement.addEventListener("wheel", function (event) {
   });
 });
 
-const draggingObjects = [];
-
+const draggingObjects: [Draggable, number][] = [];
+const lastPointer = new Vector2();
+const tmpVec = new Vector2();
 const onDrag = (event: MouseEvent) => {
   console.log("drag");
+  const dx = lastPointer.x - event.pageX;
+  const dy = lastPointer.y - event.pageY;
+  tmpVec.x = dx;
+  tmpVec.y = dy;
+  lastPointer.x = event.pageX;
+  lastPointer.y = event.pageY;
+  draggingObjects.forEach((val) => {
+    val[0].callback(tmpVec, false, val[1] === 0);
+  });
 };
 const onDragFinish = (event: MouseEvent) => {
   console.log("fin");
+  const dx = lastPointer.x - event.pageX;
+  const dy = lastPointer.y - event.pageY;
+  tmpVec.x = dx;
+  tmpVec.y = dy;
+  lastPointer.x = event.pageX;
+  lastPointer.y = event.pageY;
+  draggingObjects.forEach((val) => {
+    val[0].callback(tmpVec, true, val[1] === 0);
+  });
 };
 
 let touching = false;
 let moved = false;
-renderer.domElement.addEventListener("pointerdown", () => {
+renderer.domElement.addEventListener("pointerdown", function (event) {
+  draggingObjects.length = 0;
+  calculateScreenPos(
+    event.pageX,
+    event.pageY,
+    this.getBoundingClientRect(),
+    pointer
+  );
+  // console.log(pointer.x, pointer.y);
+  draggablesList.forEach((draggables) => {
+    const objects: Object3D[] = [];
+    draggables.draggables.forEach((draggables) => {
+      objects.push(draggables.object);
+    });
+    rayCaster.setFromCamera(pointer, draggables.camera);
+    // console.log(objects);
+    const intersects = rayCaster.intersectObjects(objects);
+    const intersectObjects = intersects.map((val) => val.object);
+    intersectObjects.forEach((object, index) => {
+      const indexOfIntersect = objects.indexOf(object);
+      // console.log(indexOfIntersect);
+      if (indexOfIntersect !== -1) {
+        draggingObjects.push([draggables.draggables[indexOfIntersect]!, index]);
+        // draggables.draggables[indexOfIntersect]?.callback(
+        //   intersects[indexOfIntersect]!,
+        //   event.deltaY,
+        //   index === 0
+        // );
+      }
+    });
+    // clickables.clickables.forEach((clickable) => {
+    //   const indexOfIntersect = intersectObjects.indexOf(clickable.object);
+    //   if (indexOfIntersect !== -1) {
+    //     clickables.clickables[indexOfIntersect]?.callback(
+    //       intersects[indexOfIntersect]!
+    //     );
+    //   }
+    // });
+  });
   touching = true;
   moved = false;
+  draggingObjects.sort((a, b) => a[1] - b[1]);
+  lastPointer.x = event.pageX;
+  lastPointer.y = event.pageY;
 });
 renderer.domElement.addEventListener("pointermove", (event) => {
   moved = true;
