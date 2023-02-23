@@ -21,6 +21,7 @@ const props = withDefaults(
     sy?: number;
     sz?: number;
     onClickListener?: (event: Intersection, top: boolean) => unknown
+    onScrollListener?: (event: Intersection, amount: number, top: boolean) => unknown
   }>(),
   {
     shadow: true,

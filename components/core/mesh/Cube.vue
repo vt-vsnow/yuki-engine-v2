@@ -19,6 +19,7 @@ const props = withDefaults(
     sz?: number;
     rotOrder?: string;
     onClickListener?: (event: Intersection, top: boolean) => unknown
+    onScrollListener?: (event: Intersection, amount: number, top: boolean) => unknown
   }>(),
   {
     dx: 0,

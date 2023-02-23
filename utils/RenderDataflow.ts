@@ -27,6 +27,10 @@ const newRenderDataflowProvides = () => ({
     object: Object3D;
     callback: (event: Intersection, top: boolean) => unknown;
   }[],
+  scrollables: [] as {
+    object: Object3D;
+    callback: (event: Intersection, amount: number, top: boolean) => unknown;
+  }[],
 });
 type RenderDataflowProps = typeof renderDataflowProps;
 type RenderDataflowProvides = ReturnType<typeof newRenderDataflowProvides>;
