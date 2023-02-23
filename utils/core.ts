@@ -150,7 +150,7 @@ interface Scrollable {
   object: Object3D;
   callback: (event: Intersection, amount: number, top: boolean) => unknown;
 }
-interface draggable {
+interface Draggable {
   object: Object3D;
   callback: (amount: Vector2, finished: boolean, top: boolean) => unknown;
 }
@@ -317,11 +317,11 @@ export const removeScrollables = (
     (val) => !(val.camera === camera, val.scrollables === scrollables)
   );
 };
-let draggablesList: { draggables: draggable[]; camera: Camera }[] = [];
-export const addDraggables = (camera: Camera, draggables: draggable[]) => {
+let draggablesList: { draggables: Draggable[]; camera: Camera }[] = [];
+export const addDraggables = (camera: Camera, draggables: Draggable[]) => {
   draggablesList.push({ draggables, camera });
 };
-export const removeDraggables = (camera: Camera, draggables: draggable[]) => {
+export const removeDraggables = (camera: Camera, draggables: Draggable[]) => {
   draggablesList = draggablesList.filter(
     (val) => !(val.camera === camera, val.draggables === draggables)
   );
