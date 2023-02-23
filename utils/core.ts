@@ -262,7 +262,7 @@ const draggingObjects: [Draggable, number][] = [];
 const lastPointer = new Vector2();
 const tmpVec = new Vector2();
 const onDrag = (event: MouseEvent) => {
-  console.log("drag");
+  // console.log("drag");
   const dx = lastPointer.x - event.pageX;
   const dy = lastPointer.y - event.pageY;
   tmpVec.x = dx;
@@ -274,7 +274,7 @@ const onDrag = (event: MouseEvent) => {
   });
 };
 const onDragFinish = (event: MouseEvent) => {
-  console.log("fin");
+  // console.log("fin");
   const dx = lastPointer.x - event.pageX;
   const dy = lastPointer.y - event.pageY;
   tmpVec.x = dx;
