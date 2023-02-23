@@ -146,22 +146,42 @@ interface Clickable {
   object: Object3D;
   callback: (event: Intersection, top: boolean) => unknown;
 }
+interface Scrollable {
+  object: Object3D;
+  callback: (event: Intersection, amount: number, top: boolean) => unknown;
+}
+interface Draggable {
+  object: Object3D;
+  callback: (amount: Vector2, finished: boolean, top: boolean) => unknown;
+}
 
 const rayCaster = new Raycaster();
 const pointer = new Vector2();
-renderer.domElement.addEventListener("click", function (event) {
+
+const calculateScreenPos = (
+  clickX: number,
+  clickY: number,
+  clientRect: DOMRect,
+  pointer: Vector2
+) => {
   // 参照 https://lab.syncer.jp/Web/JavaScript/Snippet/12/
-  var clickX = event.pageX;
-  var clickY = event.pageY;
 
   // 要素の位置を取得
-  var clientRect = this.getBoundingClientRect();
   var positionX = clientRect.left + window.pageXOffset;
   var positionY = clientRect.top + window.pageYOffset;
 
   // 要素内におけるクリック位置を計算
   pointer.x = ((clickX - positionX) / clientRect.width) * 2 - 1;
   pointer.y = 1 - ((clickY - positionY) / clientRect.height) * 2;
+};
+
+renderer.domElement.addEventListener("click", function (event) {
+  calculateScreenPos(
+    event.pageX,
+    event.pageY,
+    this.getBoundingClientRect(),
+    pointer
+  );
   // console.log(pointer.x, pointer.y);
   clickablesList.forEach((clickables) => {
     const objects: Object3D[] = [];
@@ -193,6 +213,149 @@ renderer.domElement.addEventListener("click", function (event) {
   });
 });
 
+const rawPointer = new Vector2();
+renderer.domElement.addEventListener("mousemove", function (event) {
+  rawPointer.x = event.pageX;
+  rawPointer.y = event.pageY;
+});
+
+renderer.domElement.addEventListener("wheel", function (event) {
+  calculateScreenPos(
+    rawPointer.x,
+    rawPointer.y,
+    this.getBoundingClientRect(),
+    pointer
+  );
+  // console.log(pointer.x, pointer.y);
+  scrollablesList.forEach((scrollables) => {
+    const objects: Object3D[] = [];
+    scrollables.scrollables.forEach((scrollables) => {
+      objects.push(scrollables.object);
+    });
+    rayCaster.setFromCamera(pointer, scrollables.camera);
+    // console.log(objects);
+    const intersects = rayCaster.intersectObjects(objects);
+    const intersectObjects = intersects.map((val) => val.object);
+    intersectObjects.forEach((object, index) => {
+      const indexOfIntersect = objects.indexOf(object);
+      // console.log(indexOfIntersect);
+      if (indexOfIntersect !== -1) {
+        scrollables.scrollables[indexOfIntersect]?.callback(
+          intersects[indexOfIntersect]!,
+          event.deltaY,
+          index === 0
+        );
+      }
+    });
+    // clickables.clickables.forEach((clickable) => {
+    //   const indexOfIntersect = intersectObjects.indexOf(clickable.object);
+    //   if (indexOfIntersect !== -1) {
+    //     clickables.clickables[indexOfIntersect]?.callback(
+    //       intersects[indexOfIntersect]!
+    //     );
+    //   }
+    // });
+  });
+});
+
+const draggingObjects: [Draggable, number][] = [];
+const lastPointer = new Vector2();
+const tmpVec = new Vector2();
+const onDrag = (event: MouseEvent) => {
+  console.log("drag");
+  const dx = lastPointer.x - event.pageX;
+  const dy = lastPointer.y - event.pageY;
+  tmpVec.x = dx;
+  tmpVec.y = dy;
+  lastPointer.x = event.pageX;
+  lastPointer.y = event.pageY;
+  draggingObjects.forEach((val) => {
+    val[0].callback(tmpVec, false, val[1] === 0);
+  });
+};
+const onDragFinish = (event: MouseEvent) => {
+  console.log("fin");
+  const dx = lastPointer.x - event.pageX;
+  const dy = lastPointer.y - event.pageY;
+  tmpVec.x = dx;
+  tmpVec.y = dy;
+  lastPointer.x = event.pageX;
+  lastPointer.y = event.pageY;
+  draggingObjects.forEach((val) => {
+    val[0].callback(tmpVec, true, val[1] === 0);
+  });
+};
+
+let touching = false;
+let moved = false;
+renderer.domElement.addEventListener("pointerdown", function (event) {
+  draggingObjects.length = 0;
+  calculateScreenPos(
+    event.pageX,
+    event.pageY,
+    this.getBoundingClientRect(),
+    pointer
+  );
+  // console.log(pointer.x, pointer.y);
+  draggablesList.forEach((draggables) => {
+    const objects: Object3D[] = [];
+    draggables.draggables.forEach((draggables) => {
+      objects.push(draggables.object);
+    });
+    rayCaster.setFromCamera(pointer, draggables.camera);
+    // console.log(objects);
+    const intersects = rayCaster.intersectObjects(objects);
+    const intersectObjects = intersects.map((val) => val.object);
+    intersectObjects.forEach((object, index) => {
+      const indexOfIntersect = objects.indexOf(object);
+      // console.log(indexOfIntersect);
+      if (indexOfIntersect !== -1) {
+        draggingObjects.push([draggables.draggables[indexOfIntersect]!, index]);
+        // draggables.draggables[indexOfIntersect]?.callback(
+        //   intersects[indexOfIntersect]!,
+        //   event.deltaY,
+        //   index === 0
+        // );
+      }
+    });
+    // clickables.clickables.forEach((clickable) => {
+    //   const indexOfIntersect = intersectObjects.indexOf(clickable.object);
+    //   if (indexOfIntersect !== -1) {
+    //     clickables.clickables[indexOfIntersect]?.callback(
+    //       intersects[indexOfIntersect]!
+    //     );
+    //   }
+    // });
+  });
+  touching = true;
+  moved = false;
+  draggingObjects.sort((a, b) => a[1] - b[1]);
+  lastPointer.x = event.pageX;
+  lastPointer.y = event.pageY;
+});
+renderer.domElement.addEventListener("pointermove", (event) => {
+  moved = true;
+  touching && onDrag(event);
+});
+renderer.domElement.addEventListener("pointerup", (event) => {
+  if (touching && moved) {
+    onDragFinish(event);
+  }
+  touching = false;
+});
+renderer.domElement.addEventListener("pointercancel", (event) => {
+  if (touching && moved) {
+    onDragFinish(event);
+  }
+  touching = false;
+});
+renderer.domElement.addEventListener("pointerleave", (event) => {
+  if (touching && moved) {
+    onDragFinish(event);
+  }
+  touching = false;
+});
+
 let clickablesList: { clickables: Clickable[]; camera: Camera }[] = [];
 export const addClickables = (camera: Camera, clickables: Clickable[]) => {
   clickablesList.push({ clickables, camera });
@@ -200,5 +363,26 @@ export const addClickables = (camera: Camera, clickables: Clickable[]) => {
 export const removeClickables = (camera: Camera, clickables: Clickable[]) => {
   clickablesList = clickablesList.filter(
     (val) => !(val.camera === camera, val.clickables === clickables)
+  );
+};
+let scrollablesList: { scrollables: Scrollable[]; camera: Camera }[] = [];
+export const addScrollables = (camera: Camera, scrollables: Scrollable[]) => {
+  scrollablesList.push({ scrollables, camera });
+};
+export const removeScrollables = (
+  camera: Camera,
+  scrollables: Scrollable[]
+) => {
+  scrollablesList = scrollablesList.filter(
+    (val) => !(val.camera === camera, val.scrollables === scrollables)
+  );
+};
+let draggablesList: { draggables: Draggable[]; camera: Camera }[] = [];
+export const addDraggables = (camera: Camera, draggables: Draggable[]) => {
+  draggablesList.push({ draggables, camera });
+};
+export const removeDraggables = (camera: Camera, draggables: Draggable[]) => {
+  draggablesList = draggablesList.filter(
+    (val) => !(val.camera === camera, val.draggables === draggables)
   );
 };

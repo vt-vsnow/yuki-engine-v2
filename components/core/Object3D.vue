@@ -3,7 +3,7 @@ div Object3D
 </template>
 
 <script setup lang="ts">
-import { Object3D } from "three";
+import { Object3D, Vector2 } from "three";
 import type { Intersection } from "three"
 import type { RenderDataflow } from "~~/utils/RenderDataflow";
 const props = withDefaults(
@@ -20,6 +20,8 @@ const props = withDefaults(
     sz?: number;
     rotOrder?: string;
     onClickListener?: (event: Intersection, top: boolean) => unknown
+    onScrollListener?: (event: Intersection, amount: number, top: boolean) => unknown
+    onDragListener?: (amount: Vector2, finished: boolean, top: boolean) => unknown
   }>(),
   {
     dx: 0,
@@ -74,6 +76,7 @@ watchEffect(() => {
     childFlow?.emit?.("updateRenderRequired", [id, false]);
   }
 });
+/* end render flow */
 watch([toRef(props, "onClickListener"), toRef(props, "object3d")], (newVal, oldVal) => {
   const clickables = flow?.inject!("clickables")!
   // console.log(newVal, oldVal)
@@ -86,7 +89,30 @@ watch([toRef(props, "onClickListener"), toRef(props, "object3d")], (newVal, oldV
     clickables.push(val)
   })
 }, { immediate: true })
-/* end render flow */
+watch([toRef(props, "onScrollListener"), toRef(props, "object3d")], (newVal, oldVal) => {
+  const scrollables = flow?.inject!("scrollables")!
+  // console.log(newVal, oldVal)
+  if (newVal[0]) {
+    scrollables.push({ object: newVal[1], callback: newVal[0] })
+  }
+  const filtered = scrollables.filter((object) => !(object.object === oldVal[1] && object.callback === oldVal[0]))
+  scrollables.length = 0;
+  filtered.forEach((val) => {
+    scrollables.push(val)
+  })
+}, { immediate: true })
+watch([toRef(props, "onDragListener"), toRef(props, "object3d")], (newVal, oldVal) => {
+  const draggables = flow?.inject!("draggables")!
+  // console.log(newVal, oldVal)
+  if (newVal[0]) {
+    draggables.push({ object: newVal[1], callback: newVal[0] })
+  }
+  const filtered = draggables.filter((object) => !(object.object === oldVal[1] && object.callback === oldVal[0]))
+  draggables.length = 0;
+  filtered.forEach((val) => {
+    draggables.push(val)
+  })
+}, { immediate: true })
 const wrapper = new Object3D();
 wrapper.add(toRaw(props.object3d));
 childFlow?.inject?.("object3d").add(wrapper);

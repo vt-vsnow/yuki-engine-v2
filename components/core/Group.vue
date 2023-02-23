@@ -4,7 +4,7 @@ div Group
 </template>
 
 <script setup lang="ts">
-import { Object3D } from "three";
+import { Object3D, Vector2 } from "three";
 import type { RenderDataflow } from "~~/utils/RenderDataflow";
 import type { Intersection } from "three"
 const props = withDefaults(
@@ -20,6 +20,8 @@ const props = withDefaults(
     sz?: number;
     rotOrder?: string;
     onClickListener?: (event: Intersection, top: boolean) => unknown
+    onScrollListener?: (event: Intersection, amount: number, top: boolean) => unknown
+    onDragListener?: (amount: Vector2, finished: boolean, top: boolean) => unknown
   }>(),
   {
     dx: 0,
